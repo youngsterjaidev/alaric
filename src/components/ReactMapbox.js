@@ -29,7 +29,7 @@ const markStyle = {
 
 const ReactMapbox = () => {
     const [showPopup, togglePopup] = useState(true);
-
+    const [user, setUser] = useState({});
     const [location, setLocation] = useState({
         latitude: 0,
         longitude: 0,
@@ -56,13 +56,44 @@ const ReactMapbox = () => {
                         (key) => snapshot.val()[key]
                     );
                     console.log(result);
+                    setUser(firebase.auth().currentUser);
                     setMarkers(result);
+                    setInterval(() => {
+                        navigator.geolocation.getCurrentPosition((e) => {
+                            firebase
+                                .database()
+                                .ref()
+                                .child("location")
+                                .child(
+                                    user.uid || firebase.auth().currentUser.uid
+                                )
+                                .set(
+                                    {
+                                        currentLocation: {
+                                            longitude: e.coords.longitude,
+                                            latitude: e.coords.latitude,
+                                        },
+                                    },
+                                    (err) => {
+                                        if (err) {
+                                            console.log(
+                                                "Error Occured while sending the location !",
+                                                err
+                                            );
+                                        } else {
+                                            console.log("Location send !");
+                                        }
+                                    }
+                                );
+                        });
+                    }, 1000);
                 } else {
                     console.log("The Snapshot is null");
                 }
             });
     }, []);
 
+    /*
     useEffect(() => {
         setInterval(() => {
             navigator.geolocation.getCurrentPosition((e) => {
@@ -70,7 +101,7 @@ const ReactMapbox = () => {
                     .database()
                     .ref()
                     .child("location")
-                    .child(navigator.productSub)
+                    .child(user.uid || firebase.auth().currentUser.uid)
                     .set(
                         {
                             currentLocation: {
@@ -91,7 +122,7 @@ const ReactMapbox = () => {
                     );
             });
         }, 1000);
-    }, []);
+    }, []);*/
 
     return (
         <Map
