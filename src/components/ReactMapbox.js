@@ -79,6 +79,8 @@ const ReactMapbox = () => {
                                         currentLocation: {
                                             longitude: e.coords.longitude,
                                             latitude: e.coords.latitude,
+                                            email: user.email,
+                                            uid: user.uid
                                         },
                                     },
                                     (err) => {
@@ -161,7 +163,7 @@ const ReactMapbox = () => {
                             m.currentLocation.latitude,
                         ]}
                     >
-                        <h1>Your are Here</h1>
+                        <div>{m.currentLocation.email}</div>
                     </Popup>
                 </>
             ))}

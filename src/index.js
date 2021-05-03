@@ -10,6 +10,7 @@ import { Router, Link } from "@reach/router";
 import ReactMapbox from "./components/ReactMapbox.js";
 import Login from "./Login.js";
 import Loading from "./Loading.js";
+import CreateAccount from "./CreateAccount.js";
 
 import UserContext from "./UserContext.js";
 
@@ -49,6 +50,7 @@ const App = () => {
                 <Loading path="/" />
                 <ReactMapbox path="/home" />
                 <Login path="/login" />
+                <CreateAccount path="/createAccount" />
             </Router>
         </UserContext.Provider>
     );
