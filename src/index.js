@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import firebase from "firebase/app";
-import 'firebase/auth'
+import "firebase/auth";
 import "firebase/database";
-import { Router, Link } from '@reach/router'
+import { Router, Link } from "@reach/router";
 
 //import App from "./components/App.js";
 //import ReactMap from "./components/ReactMap.js";
@@ -11,6 +11,7 @@ import ReactMapbox from "./components/ReactMapbox.js";
 import Login from "./Login.js";
 import Loading from "./Loading.js";
 
+import UserContext from "./UserContext.js";
 
 let firebaseConfig = {
     apiKey: "AIzaSyBa03yaOEGCwaL-G6v95ppgGS6lyvoFSVk",
@@ -30,13 +31,27 @@ firebase.initializeApp(firebaseConfig);
 //let Loading = () => <div>Loading</div>
 
 const App = () => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                setUser(user);
+            } else {
+                setUser(null);
+            }
+        });
+    }, []);
+
     return (
-        <Router>
-            <Loading path="/" />
-            <ReactMapbox path="/home" />
-            <Login path="/login" />
-        </Router>
-    )
-}
+        <UserContext.Provider value={user}>
+            <Router>
+                <Loading path="/" />
+                <ReactMapbox path="/home" />
+                <Login path="/login" />
+            </Router>
+        </UserContext.Provider>
+    );
+};
 
 ReactDOM.render(<App />, document.querySelector("#root"));

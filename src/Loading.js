@@ -1,30 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Redirect, navigate } from '@reach/router' 
 import firebase from 'firebase'
 
+import UserContext from './UserContext.js'
+
 const Loading = () => {
-    const [isLogin, setIsLogin] = useState(undefined)
+    const [isLogin, setIsLogin] = useState(false)
+    const user = useContext(UserContext)
 
     useEffect(() => {
-        // check already user is login
-        let user = firebase.auth().currentUser
-        if(!user) {
-            console.log("User", user)
-            navigate('/home')
-        } else {
-            console.log("User is not Login")
-            navigate('/login')
-        }
-    }, [])
+        console.log("The User Will Be ", user)
+    })
 
     return (
         <div>
             <div>Wait a minute</div>
-            {isLogin ? (
-                <Redirect to="/home"  />
-            ) : (
-                <Redirect to="/login" noThrow />
-            )}
+            {user ? <Redirect to="/home" noThrow /> : <Redirect to="/login" noThrow />}
         </div>
     )
 }

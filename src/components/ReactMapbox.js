@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
-import ReactMapboxGl, { Marker, Layer, Feature } from "react-mapbox-gl";
+import React, { useState, useEffect, useContext } from "react";
+import ReactMapboxGl, { Marker, Layer, Feature, Popup } from "react-mapbox-gl";
 import firebase from "firebase/app";
+
+import { Redirect } from "@reach/router";
+
+import UserContext from "../UserContext.js";
 //import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker'
 
 //const worker = new Worker('./worker.js')
@@ -28,8 +32,8 @@ const markStyle = {
 };
 
 const ReactMapbox = () => {
+    const user = useContext(UserContext);
     const [showPopup, togglePopup] = useState(true);
-    const [user, setUser] = useState({});
     const [location, setLocation] = useState({
         latitude: 0,
         longitude: 0,
@@ -38,6 +42,11 @@ const ReactMapbox = () => {
     const [markers, setMarkers] = useState([]);
 
     useEffect(() => {
+        console.log("The User of User Context", user);
+
+        if (!user) {
+            <Redirect to="/login" noThrow />;
+        }
         navigator.geolocation.getCurrentPosition((e) => {
             setLocation({
                 longitude: e.coords.longitude,
@@ -55,8 +64,6 @@ const ReactMapbox = () => {
                     const result = await Object.keys(snapshot.val()).map(
                         (key) => snapshot.val()[key]
                     );
-                    console.log(result);
-                    setUser(firebase.auth().currentUser);
                     setMarkers(result);
                     setInterval(() => {
                         navigator.geolocation.getCurrentPosition((e) => {
@@ -137,15 +144,26 @@ const ReactMapbox = () => {
             <Marker coordinates={[location.longitude, location.latitude]}>
                 <div style={locationStyle}></div>
             </Marker>
-            {markers.map((m) => (
-                <Marker
-                    coordinates={[
-                        m.currentLocation.longitude,
-                        m.currentLocation.latitude,
-                    ]}
-                >
-                    <div style={markStyle}></div>
-                </Marker>
+            {markers.map((m, index) => (
+                <>
+                    <Marker
+                        key={index}
+                        coordinates={[
+                            m.currentLocation.longitude,
+                            m.currentLocation.latitude,
+                        ]}
+                    >
+                        <div style={markStyle}></div>
+                    </Marker>
+                    <Popup
+                        coordinates={[
+                            m.currentLocation.longitude,
+                            m.currentLocation.latitude,
+                        ]}
+                    >
+                        <h1>Your are Here</h1>
+                    </Popup>
+                </>
             ))}
         </Map>
     );

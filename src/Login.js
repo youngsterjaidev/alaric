@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "@reach/router";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, navigate } from "@reach/router";
 import firebase from 'firebase'
 
+import UserContext from './UserContext.js'
+
 const Login = () => {
-    const [isLogin, setIsLogin] = useState(false);
+    const user = useContext(UserContext)
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -24,10 +26,17 @@ const Login = () => {
 
     useEffect(() => {
         // initial checking
+        console.log("user", user)
+        if(user) {
+            navigate('/home')
+        } else {
+            return
+        }
     });
 
     return (
         <div>
+            {user ? <div>Loading</div> : (
             <form onSubmit={handleLogin}>
                 <div>
                     <label htmlFor="email"></label>
@@ -56,6 +65,7 @@ const Login = () => {
                     <Link to="/createAccount">Create An Account</Link>
                 </div>
             </form>
+            )}
         </div>
     );
 };
