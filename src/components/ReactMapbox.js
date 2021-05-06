@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import ReactMapboxGl, { Marker, Layer, Feature, Popup } from "react-mapbox-gl";
 import firebase from "firebase/app";
-
-import { Redirect } from "@reach/router";
-
+import styled from "styled-components"
+import { Redirect, navigate } from "@reach/router";
+import { HiOutlineLogout } from 'react-icons/hi'
 import UserContext from "../UserContext.js";
 //import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker'
 
@@ -31,6 +31,28 @@ const markStyle = {
     border: "4px solid #eaa29b",
 };
 
+const Sidebar = styled.div`
+    width: 300px;
+    height: 90%;
+    position: absolute;
+    z-index: 1;
+    margin: 1em;
+    border-radius: 10px;
+    background-color: #ffffffe0;
+    box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
+`
+
+const TopBar = styled.div`
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em;
+    border-radius: 10px 10px 0px 0px;
+`
+
 const ReactMapbox = () => {
     const user = useContext(UserContext);
     const [showPopup, togglePopup] = useState(true);
@@ -45,7 +67,7 @@ const ReactMapbox = () => {
         console.log("The User of User Context", user);
 
         if (!user) {
-            <Redirect to="/login" noThrow />;
+            navigate("/login")
         }
         navigator.geolocation.getCurrentPosition((e) => {
             setLocation({
@@ -65,7 +87,7 @@ const ReactMapbox = () => {
                         (key) => snapshot.val()[key]
                     );
                     setMarkers(result);
-                    setInterval(() => {
+                    /*setInterval(() => {
                         navigator.geolocation.getCurrentPosition((e) => {
                             firebase
                                 .database()
@@ -95,14 +117,13 @@ const ReactMapbox = () => {
                                     }
                                 );
                         });
-                    }, 1000);
+                    }, 1000);*/
                 } else {
                     console.log("The Snapshot is null");
                 }
             });
     }, []);
 
-    /*
     useEffect(() => {
         setInterval(() => {
             navigator.geolocation.getCurrentPosition((e) => {
@@ -131,9 +152,25 @@ const ReactMapbox = () => {
                     );
             });
         }, 1000);
-    }, []);*/
+    }, []);
 
     return (
+        <div>
+            <Sidebar>
+                <TopBar>
+                    <div></div>
+                    <div><HiOutlineLogout /></div>
+                </TopBar>
+                {markers.map(m => {
+                    return (
+                        <div>
+                        <h2>{m.currentLocation.email}</h2>
+                        <h4>{m.currentLocation.longitude}</h4>
+                        <h4>{m.currentLocation.latitude}</h4>
+                        </div>
+                    )
+                })}
+            </Sidebar>
         <Map
             style="mapbox://styles/mapbox/streets-v8"
             containerStyle={{
@@ -168,6 +205,7 @@ const ReactMapbox = () => {
                 </>
             ))}
         </Map>
+        </div>
     );
 };
 
