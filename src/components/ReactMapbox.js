@@ -10,6 +10,8 @@ import UserContext from "../UserContext.js";
 //const worker = new Worker('./worker.js')
 
 //mapbox.workerClass = MapboxWorker
+import SidebarWrapper from "./SidebarWrapper"
+
 const Map = ReactMapboxGl({
     accessToken:
         "pk.eyJ1IjoiamFpZGV2djk5OSIsImEiOiJja25vcHhkNjExYmR4MnZwcmU3MG9wd2hlIn0.YV5iqi1TiI1nSWQd-bQBmA",
@@ -31,27 +33,6 @@ const markStyle = {
     border: "4px solid #eaa29b",
 };
 
-const Sidebar = styled.div`
-    width: 300px;
-    height: 90%;
-    position: absolute;
-    z-index: 1;
-    margin: 1em;
-    border-radius: 10px;
-    background-color: #ffffffe0;
-    box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
-`
-
-const TopBar = styled.div`
-    width: 100%;
-    background-color: #fff;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5em;
-    border-radius: 10px 10px 0px 0px;
-`
 
 const ReactMapbox = () => {
     const user = useContext(UserContext);
@@ -156,21 +137,7 @@ const ReactMapbox = () => {
 
     return (
         <div>
-            <Sidebar>
-                <TopBar>
-                    <div></div>
-                    <div><HiOutlineLogout /></div>
-                </TopBar>
-                {markers.map(m => {
-                    return (
-                        <div>
-                        <h2>{m.currentLocation.email}</h2>
-                        <h4>{m.currentLocation.longitude}</h4>
-                        <h4>{m.currentLocation.latitude}</h4>
-                        </div>
-                    )
-                })}
-            </Sidebar>
+            <SidebarWrapper markers={markers}></SidebarWrapper>
         <Map
             style="mapbox://styles/mapbox/streets-v8"
             containerStyle={{

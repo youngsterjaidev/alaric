@@ -88,6 +88,11 @@ const Button = styled.button`
     font-weight: bold;
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
+    
+    &:disabled {
+        background-color: transparent;
+        color: grey;
+    }
 `
 
 const MyLink = styled(Link)`
@@ -161,11 +166,21 @@ const Login = () => {
     const user = useContext(UserContext)
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const handleEmail = (e) => setEmail(e.target.value);
-
-    const handlePassword = (e) => setPassword(e.target.value);
     const [ errorMessage, setErrorMessage ] = useState("Welcome Back !")
+    const [validateForm, setValidateForm] = useState(true)
+
+    const handleEmail = (e) => {
+        setEmail(e.target.value);
+        let pass = document.querySelector("form").checkValidity()
+        setValidateForm(!pass)
+    }
+
+    const handlePassword = (e) => {
+        setPassword(e.target.value);
+        let pass = document.querySelector("form").checkValidity()
+        setValidateForm(!pass)
+    }
+
 
     const handleLogin = (e) => {
         e.preventDefault()
@@ -230,7 +245,7 @@ const Login = () => {
                     />
                 </FormContainer>
                 <FormContainer>
-                    <Button type="submit">
+                    <Button type="submit" disabled={validateForm}>
                         Login
                     </Button>
                 </FormContainer>
