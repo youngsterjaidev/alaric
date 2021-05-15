@@ -43,11 +43,19 @@
 
             img { width: 100%; }
             li { margin: 1.5em 0em; }
+    
+            #modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 8;
+            }
         </style>
         <title>React App</title>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="modal"></div>
         <div id="root"></div>
         <!--
       This HTML file is a template.

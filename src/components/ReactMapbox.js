@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import ReactMapboxGl, { Marker, Layer, Feature, Popup } from "react-mapbox-gl";
 import firebase from "firebase/app";
-import styled from "styled-components"
-import { Redirect, navigate } from "@reach/router";
-import { HiOutlineLogout } from 'react-icons/hi'
+import styled from "styled-components";
+import { Redirect, navigate, Router} from "@reach/router";
+import { HiOutlineLogout } from "react-icons/hi";
+import MoonLoader from "react-spinners/MoonLoader";
 import UserContext from "../UserContext.js";
+import ProfileBar from "./ProfileBar";
 //import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker'
 
 //const worker = new Worker('./worker.js')
 
 //mapbox.workerClass = MapboxWorker
-import SidebarWrapper from "./SidebarWrapper"
+import SidebarWrapper from "./SidebarWrapper";
 
 const Map = ReactMapboxGl({
     accessToken:
@@ -33,10 +35,18 @@ const markStyle = {
     border: "4px solid #eaa29b",
 };
 
+const Container = styled.div`
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+`
 
 const ReactMapbox = () => {
     const user = useContext(UserContext);
+    const [userInfo, setUserInfo] = useState({});
     const [showPopup, togglePopup] = useState(true);
+    const [showProfile, setShowProfile] = useState(false);
     const [location, setLocation] = useState({
         latitude: 0,
         longitude: 0,
@@ -48,7 +58,7 @@ const ReactMapbox = () => {
         console.log("The User of User Context", user);
 
         if (!user) {
-            navigate("/login")
+            navigate("/login");
         }
         navigator.geolocation.getCurrentPosition((e) => {
             setLocation({
@@ -106,6 +116,51 @@ const ReactMapbox = () => {
     }, []);
 
     useEffect(() => {
+        firebase
+            .firestore()
+            .collection("accounts")
+            .where("uid", "==", user.uid)
+            .onSnapshot((snap) => {
+                snap.docChanges().forEach((d) => {
+                    setUserInfo(d.doc.data())
+                    if (d.doc.data().type === "driver") {
+                        // run the interval function
+                        setInterval(() => {
+                            navigator.geolocation.getCurrentPosition((e) => {
+                                firebase
+                                    .database()
+                                    .ref()
+                                    .child("location")
+                                    .child(
+                                        user.uid ||
+                                            firebase.auth().currentUser.uid
+                                    )
+                                    .set(
+                                        {
+                                            currentLocation: {
+                                                longitude: e.coords.longitude,
+                                                latitude: e.coords.latitude,
+                                            },
+                                        },
+                                        (err) => {
+                                            if (err) {
+                                                console.log(
+                                                    "Error Occured while sending the location !",
+                                                    err
+                                                );
+                                            } else {
+                                                console.log("Location send !");
+                                            }
+                                        }
+                                    );
+                            });
+                        }, 1000);
+                    } else {
+                    }
+                });
+            });
+    }, []);
+    /*useEffect(() => {
         setInterval(() => {
             navigator.geolocation.getCurrentPosition((e) => {
                 firebase
@@ -133,45 +188,57 @@ const ReactMapbox = () => {
                     );
             });
         }, 1000);
-    }, []);
+    }, []);*/
 
     return (
         <div>
-            <SidebarWrapper markers={markers}></SidebarWrapper>
-        <Map
-            style="mapbox://styles/mapbox/streets-v8"
-            containerStyle={{
-                height: "100vh",
-                width: "100%",
-            }}
-            center={[location.longitude, location.latitude]}
-            movingMethod="jumpTo"
-        >
-            <Marker coordinates={[location.longitude, location.latitude]}>
-                <div style={locationStyle}></div>
-            </Marker>
-            {markers.map((m, index) => (
-                <>
-                    <Marker
-                        key={index}
-                        coordinates={[
-                            m.currentLocation.longitude,
-                            m.currentLocation.latitude,
-                        ]}
-                    >
-                        <div style={markStyle}></div>
-                    </Marker>
-                    <Popup
-                        coordinates={[
-                            m.currentLocation.longitude,
-                            m.currentLocation.latitude,
-                        ]}
-                    >
-                        <div>{m.currentLocation.email}</div>
-                    </Popup>
-                </>
-            ))}
-        </Map>
+            <SidebarWrapper
+                markers={markers}
+                showProfile={showProfile}
+                setShowProfile={setShowProfile}
+            />
+            <ProfileBar
+                showProfile={showProfile}
+                setShowProfile={setShowProfile}
+            />
+            {userInfo.type === "driver" ? (
+                <Container>
+                    <h2>We are sending Your Location !</h2>
+                </Container>
+            ) : (<Map
+                style="mapbox://styles/mapbox/streets-v8"
+                containerStyle={{
+                    height: "100vh",
+                    width: "100%",
+                }}
+                center={[location.longitude, location.latitude]}
+                movingMethod="jumpTo"
+            >
+                <Marker coordinates={[location.longitude, location.latitude]}>
+                    <div style={locationStyle}></div>
+                </Marker>
+                {markers.map((m, index) => (
+                    <>
+                        <Marker
+                            key={index}
+                            coordinates={[
+                                m.currentLocation.longitude,
+                                m.currentLocation.latitude,
+                            ]}
+                        >
+                            <div style={markStyle}></div>
+                        </Marker>
+                        <Popup
+                            coordinates={[
+                                m.currentLocation.longitude,
+                                m.currentLocation.latitude,
+                            ]}
+                        >
+                            <div>{m.currentLocation.email}</div>
+                        </Popup>
+                    </>
+                ))}
+            </Map>)}
         </div>
     );
 };

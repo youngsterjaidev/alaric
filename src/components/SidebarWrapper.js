@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { HiOutlineLogout, HiArrowNarrowLeft } from "react-icons/hi";
-import { RiBusFill } from "react-icons/ri";
+import { RiBusFill, RiMenuFill } from "react-icons/ri";
+import { FiUser } from "react-icons/fi";
+import { IoIosArrowBack } from "react-icons/io";
+import { Router, Link } from "@reach/router";
 import firebase from "firebase/app";
-import { jsx, css } from "@emotion/react"
+import { jsx, css } from "@emotion/react";
+
+import BusList from "./BusList"
+import BusInfo from "./BusInfo"
 
 const Sidebar = styled.div`
     width: 350px;
-    height: 90%;
+    height: auto;
     position: absolute;
     z-index: 1;
     margin: 1em;
     border-radius: 10px;
     background-color: #ffffffe0;
-    overflow-y: scroll;
     transition: all 1s cubic-bezier(0, 1.2, 1, -0.1);
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
 
@@ -22,7 +27,7 @@ const Sidebar = styled.div`
         bottom: 0;
         margin: 1em 0em 0em 0em;
         height: 8%;
-        border-radius: 20px 20px 0px 0px;
+        border-radius: 40px 40px 0px 0px;
     }
 `;
 
@@ -32,16 +37,20 @@ const TopBar = styled.div`
     height: auto;
     display: flex;
     position: sticky;
+    z-index: 8;
     top: 0;
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
     padding: 0.5em;
-    border-radius: 10px 10px 0px 0px;
-    box-shadow: 0 4px 23px 5px rgb(173 173 173 / 20%),
-        0 2px 6px rgb(197 197 197 / 18%);
+    border-radius: 10px 0px 0px 0px;
+    box-shadow: 0 4px 23px 5px rgb(173 173 173 / 20%),0 2px 6px rgb(197 197 197 / 18%);
+
+    @media (max-width: 500px) {
+        border-radius: 50px 50px 0px 0px;
+    }
 `;
-const IconWrapper = styled.div`
+const IconWrapper = styled(Link)`
     cursor: pointer;
     display: grid;
     place-items: center;
@@ -62,6 +71,11 @@ const ContentWrapper = styled.div`
 `;
 
 const SidebarPuller = styled.div`
+    height: 1em;
+    min-width: 6em;
+    border-radius: 50px;
+    background-color: #d7d7d7;
+
     @media (max-width: 500px) {
         height: 0.5em;
         min-width: 3em;
@@ -71,7 +85,7 @@ const SidebarPuller = styled.div`
     }
 `;
 
-const Card = styled.div`
+const Card = styled(Link)`
     width: 100%;
     display: flex;
     background-color: #fff;
@@ -108,8 +122,18 @@ const Input = styled.input`
         min-width: 220px;
     }
 `;
-const SidebarWrapper = ({ markers }) => {
-    const [sidebarHeight, setSidebarHeight] = useState("75%");
+
+const BusContainer = styled.div`
+    padding: 1em;
+    background-color: #eee;
+    position: fixed;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+`;
+
+const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
+    const [sidebarHeight, setSidebarHeight] = useState("78%");
     const [searchQuery, setSearchQuery] = useState("");
 
     const handleSearch = (e) => {
@@ -120,62 +144,38 @@ const SidebarWrapper = ({ markers }) => {
         firebase.auth().signOut();
     };
 
+    const handleHeight = (e) => {
+        if (sidebarHeight === "7%") {
+            setSidebarHeight("78%");
+        } else {
+            setSidebarHeight("7%");
+        }
+    };
+
     return (
-        <Sidebar>
-            <h1 css={css`
-                color: #fff;
-            `}>Red</h1>
+        <Sidebar style={{ height: sidebarHeight }}>
             <TopBar>
-                <IconWrapper>
-                    <HiArrowNarrowLeft
-                        style={{ height: "2em", width: "2em", color: "#000" }}
+                <IconWrapper to="/home">
+                    <IoIosArrowBack
+                        style={{ height: "1.5em", width: "1.5em", color: "#000" }}
                     />
                 </IconWrapper>
-                <SidebarPuller />
+                <SidebarPuller onClick={handleHeight}></SidebarPuller>
                 <IconWrapper
-                    onClick={handleLogout}
+                    to=""
+                    onClick={() => setShowProfile(true)}
                     style={{ placeItems: "center" }}
                 >
-                    <HiOutlineLogout
-                        style={{ height: "2em", width: "2em", color: "red" }}
+                    <FiUser
+                        style={{ height: "1.5em", width: "1.5em", color: "#000" }}
                     />
                 </IconWrapper>
             </TopBar>
             <div style={{ position: "relative" }}>
-                <div
-                    style={{
-                        padding: "1em 0.5em",
-                        position: "sticky",
-                        top: "3em",
-                        backgroundColor: "#fff",
-                        boxShadow: "0px 6px 6px 0px rgb(0 0 0 / 20%)",
-                    }}
-                >
-                    <Input
-                        type="search"
-                        placeholder="search"
-                        value={searchQuery}
-                        onChange={handleSearch}
-                    />
-                </div>
-                <ContentWrapper>
-                    {markers.map((m) => {
-                        return (
-                            <Card>
-                                <IconWrapper>
-                                    <RiBusFill
-                                        style={{
-                                            height: "2em",
-                                            width: "2em",
-                                            color: "#000",
-                                        }}
-                                    />
-                                </IconWrapper>
-                                <div>{m.currentLocation.email}</div>
-                            </Card>
-                        );
-                    })}
-                </ContentWrapper>
+                <Router>
+                    <BusList path="/" />
+                    <BusInfo path="/:busId" />
+                </Router>
             </div>
         </Sidebar>
     );

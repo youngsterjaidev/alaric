@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import "firebase/firestore";
 import { Router, Link } from "@reach/router";
 
 //import App from "./components/App.js";
@@ -48,7 +49,7 @@ const App = () => {
         <UserContext.Provider value={user}>
             <Router>
                 <Loading path="/" />
-                <ReactMapbox path="/home" />
+                <ReactMapbox path="/home/*" />
                 <Login path="/login" />
                 <CreateAccount path="/createAccount" />
             </Router>
