@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import ReactMapboxGl, { Marker, Layer, Feature, Popup } from "react-mapbox-gl";
 import firebase from "firebase/app";
 import styled from "styled-components";
-import { Redirect, navigate, Router} from "@reach/router";
+import { Redirect, navigate, Router } from "@reach/router";
 import { HiOutlineLogout } from "react-icons/hi";
 import MoonLoader from "react-spinners/MoonLoader";
 import UserContext from "../UserContext.js";
@@ -133,7 +133,7 @@ const ReactMapbox = () => {
                                     .child("location")
                                     .child(
                                         user.uid ||
-                                            firebase.auth().currentUser.uid
+                                        firebase.auth().currentUser.uid
                                     )
                                     .set(
                                         {
@@ -206,7 +206,7 @@ const ReactMapbox = () => {
                     <h2>We are sending Your Location !</h2>
                 </Container>
             ) : (<Map
-                style="mapbox://styles/mapbox/streets-v8"
+                style="mapbox://styles/mapbox/dark-v10"
                 containerStyle={{
                     height: "100vh",
                     width: "100%",

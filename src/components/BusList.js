@@ -104,8 +104,9 @@ const BusList = () => {
                 let busesArr = [];
                 snap.docChanges().forEach((bus) => {
                     busesArr.push(bus.doc.data());
-                    setBusesNear(busesArr);
+                    // setBusesNear(busesArr);
                 });
+                setBusesNear(busesArr)
             });
     }, []);
 

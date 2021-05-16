@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, navigate, Redirect } from "@reach/router";
 import firebase from 'firebase'
+import axios from "axios"
 import styled from 'styled-components'
 import UserContext from './UserContext.js'
 
@@ -124,15 +125,14 @@ const CreateAccount = () => {
     const handleSignUp = (e) => {
         e.preventDefault()
 
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then((r) => {
-                console.log("Login :", r);
-            }).catch(e => {
-                console.log("Error Occured while creating the user", e)
-                setErrorMessage(e.message)
-            })
+        axios.post("https://alaric-server.herokuapp.com/", {
+            email: email,
+            password: password
+        }).then(r => {
+            setErrorMessage("Now you can Login")
+        }).catch(e => {
+            setErrorMessage("Something went wrong !")
+        })
     };
 
     useEffect(() => {
@@ -147,44 +147,44 @@ const CreateAccount = () => {
 
     return (
         <AppContainer>
-        <Container>
-            {user ? <Redirect to="/" noThrow /> : (
-            <form onSubmit={handleSignUp}>
-                <Heading>Join Us</Heading>
-                <Tagline style={{ textAlign: "center", color: "red", fontWeight: 600 }}>{errorMessage}</Tagline>
-                <FormContainer>
-                    <label htmlFor="email"></label>
-                    <Input
-                        type="email"
-                        value={email}
-                        placeholder="Email"
-                        id="email"
-                        required
-                        onChange={handleEmail}
-                    />
-                </FormContainer>
-                <FormContainer>
-                    <label htmlFor="password"></label>
-                    <Input
-                        type="password"
-                        value={password}
-                        placeholder="Password"
-                        id="password"
-                        min="8"
-                        max="8"
-                        required
-                        onChange={handlePassword}
-                    />
-                </FormContainer>
-                <FormContainer>
-                    <Button type="submit" disabled={validateForm}>
-                        Create An Account
-                    </Button>
-                    <MyLink to="/login">Sign Up</MyLink>
-                </FormContainer>
-            </form>
-            )}
-        </Container>
+            <Container>
+                {user ? <Redirect to="/" noThrow /> : (
+                    <form onSubmit={handleSignUp}>
+                        <Heading>Join Us</Heading>
+                        <Tagline style={{ textAlign: "center", color: "red", fontWeight: 600 }}>{errorMessage}</Tagline>
+                        <FormContainer>
+                            <label htmlFor="email"></label>
+                            <Input
+                                type="email"
+                                value={email}
+                                placeholder="Email"
+                                id="email"
+                                required
+                                onChange={handleEmail}
+                            />
+                        </FormContainer>
+                        <FormContainer>
+                            <label htmlFor="password"></label>
+                            <Input
+                                type="password"
+                                value={password}
+                                placeholder="Password"
+                                id="password"
+                                min="8"
+                                max="8"
+                                required
+                                onChange={handlePassword}
+                            />
+                        </FormContainer>
+                        <FormContainer>
+                            <Button type="submit" disabled={validateForm}>
+                                Create An Account
+                            </Button>
+                            <MyLink to="/login">Sign In</MyLink>
+                        </FormContainer>
+                    </form>
+                )}
+            </Container>
         </AppContainer>
     );
 };

@@ -15,15 +15,16 @@ const Sidebar = styled.div`
     width: 350px;
     height: auto;
     position: absolute;
-    z-index: 1;
+    z-index: 5;
     margin: 1em;
     border-radius: 10px;
     background-color: #ffffffe0;
-    transition: all 1s cubic-bezier(0, 1.2, 1, -0.1);
+    transition: all 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96);
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
 
     @media (max-width: 500px) {
         width: 100%;
+        position: fixed;
         bottom: 0;
         margin: 1em 0em 0em 0em;
         height: 8%;
@@ -42,12 +43,13 @@ const TopBar = styled.div`
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5em;
-    border-radius: 10px 0px 0px 0px;
+    padding: 1em;
+    border-radius: 10px 10px 0px 0px;
     box-shadow: 0 4px 23px 5px rgb(173 173 173 / 20%),0 2px 6px rgb(197 197 197 / 18%);
 
     @media (max-width: 500px) {
         border-radius: 50px 50px 0px 0px;
+        padding: 1em;
     }
 `;
 const IconWrapper = styled(Link)`
@@ -77,7 +79,7 @@ const SidebarPuller = styled.div`
     background-color: #d7d7d7;
 
     @media (max-width: 500px) {
-        height: 0.5em;
+        height: 1em;
         min-width: 3em;
         flex: 2;
         border-radius: 50px;

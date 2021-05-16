@@ -12,7 +12,7 @@ const Container = styled.div`
     width: 100%
     height: 100vh;
     background-color: blue;
-    z-index: 4;
+    z-index: 6;
 `;
 
 const CloseWrapper = styled.div`
@@ -213,13 +213,16 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
 
     const handleTypeChange = (e) => {
         console.log("Mouse on Leave is Working !")
-            firebase.firestore().collection("accounts").doc(user.uid).update({
-                type: e.target.value
-            }).then(() => {
-                console.log("Updated Successfully !")
-            }, console.error)
+        firebase.firestore().collection("accounts").doc(user.uid).update({
+            type: e.target.value
+        }).then(() => {
+            console.log("Updated Successfully !")
+            if (userInfo.type !== userType) {
+                window.location.replace("/")
+            }
+        }, console.error)
     }
-    
+
     const handleBusNumberChange = (e) => {
         if (e.key === "Enter") {
             firebase.firestore().collection("accounts").doc(user.uid).update({
@@ -231,7 +234,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
             return
         }
     }
-    
+
     const handlePhoneChange = (e) => {
         if (e.key === "Enter") {
             firebase.firestore().collection("accounts").doc(user.uid).update({
