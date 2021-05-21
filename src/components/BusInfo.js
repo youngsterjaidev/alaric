@@ -140,6 +140,8 @@ const Payment = ({ setShowModal, bus }) => {
         console.log("button is presssed");
         firebase
             .firestore()
+            .collection("routes")
+            .doc(bus.routeId)
             .collection("fare")
             .where("origin", "==", origin)
             .where("destination", "==", dest)
@@ -286,6 +288,7 @@ const Payment = ({ setShowModal, bus }) => {
 const BusInfo = ({ busId }) => {
     const [bus, setBus] = useState({});
     const [route, setRoute] = useState({});
+    const [stops, setStops] = useState([]);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
@@ -296,14 +299,17 @@ const BusInfo = ({ busId }) => {
             .where("busNo", "==", busId)
             .onSnapshot((snap) => {
                 snap.docChanges().forEach((bus) => {
+                    console.log("The Bus Info", bus.doc.data().routeId)
                     setBus(bus.doc.data());
                     firebase
                         .firestore()
                         .collection("routes")
                         .doc(bus.doc.data().routeId)
                         .onSnapshot((s) => {
+                            console.log("The Route", s)
                             console.log(s.data())
                             setRoute(s.data());
+                            setStops(s.data().stops)
                         });
                 });
             });
@@ -324,12 +330,20 @@ const BusInfo = ({ busId }) => {
                     <div style={{ padding: "1em" }}>
                         <div>{bus.busName}</div>
                     </div>
-                    <div style={{ padding: "1em" }}>
-                        <div>{route.origin}</div>
-                        <div>{route.destination}</div>
-                        <div>{route.distance}</div>
-                        <div>{route.duration} hour</div>
-                    </div>
+                    {Object.keys(bus).length === 0 ? <h1>Something Went Wrong</h1> : (
+                        <div style={{ padding: "1em" }}>
+                            <div>{route.origin}</div>
+                            <div>{route.destination}</div>
+                            <div>{route.distance}</div>
+                            <div>{route.duration} hour</div>
+                            <div>Stops</div>
+                            {stops.length === 0 ? <h1>No Stops</h1> : (
+                                <ul>
+                                    {stops.map(stop => <li>{stop}</li>)}
+                                </ul>
+                            )}
+                        </div>
+                    )}
                 </Container>
             )}
             <div>

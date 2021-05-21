@@ -86,6 +86,8 @@ const BusList = () => {
                         .onSnapshot((snapshot) => {
                             let busArr = [];
                             snapshot.docChanges().forEach((data) => {
+                                console.log(data.doc.data())
+                                console.log(busArr)
                                 busArr.push(data.doc.data());
                                 setReady(false);
                                 setBuses(busArr);
@@ -108,7 +110,7 @@ const BusList = () => {
                 });
                 setBusesNear(busesArr)
             });
-    }, []);
+    }, [buses]);
 
     return (
         <Container>
@@ -143,9 +145,14 @@ const BusList = () => {
                                 >
                                     Here your result !
                                 </HeaderThree>
-                                {buses.map((bus) => (
-                                    <Card to={bus.busNo}>{bus.busNo}</Card>
-                                ))}
+                                {buses.map((bus) => {
+                                    console.log("addfdf", bus)
+                                    return (
+                                        <div>
+                                            <Card to={bus.busNo}>Red{bus.busNo}</Card>
+                                        </div>
+                                    )
+                                })}
                             </>
                         )}
                     </div>
