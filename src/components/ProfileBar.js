@@ -272,9 +272,10 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
     }
 
     useEffect(() => {
-        setDisplayName(user.displayName);
+        if(user) {
+        setDisplayName((user.displayName === null) ? "Not Set" : user.displayName);
         setEmail(user.email);
-        setPhone(user.phone);
+        setPhone(user.phone || "Not Set");
 
         firebase
             .firestore()
@@ -288,6 +289,9 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                     setPhone(d.doc.data().phone)
                 });
             });
+        } else {
+            navigate("/")
+        }
     }, []);
 
     return (

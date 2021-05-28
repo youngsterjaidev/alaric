@@ -3,6 +3,7 @@ import { Link, navigate, Redirect } from "@reach/router";
 import firebase from 'firebase'
 import axios from "axios"
 import styled from 'styled-components'
+import MoonLoader from "react-spinners/MoonLoader";
 import UserContext from './UserContext.js'
 
 
@@ -11,10 +12,11 @@ const AppContainer = styled.div`
     height: 100vh;
     display: grid;
     place-items: center;
+    background: hsl(0deg 0% 90%);
 `
 
 const Container = styled.div`
-    width: 500px;
+    width: auto;
     height: auto;
     min-height: 500px;
     top: 2em;
@@ -26,12 +28,13 @@ const Container = styled.div`
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
     
     @media (max-width: 500px) {
-        width: 100%;
+        width: 90%;
+        place-items: stretch;
     }
 `
 
 const FormContainer = styled.div`
-    padding: 1em 2em;
+    padding: 1em 1.5em;
     display: grid;
     place-items: center;
 `
@@ -47,10 +50,6 @@ const Input = styled.input`
     background: transparent;
     font-family: 'Montserrat', sans-serif;
 
-    &:hover {
-        outline: none
-    }
-
     &:valid {
         border-bottom: 2px solid #000;
     }
@@ -58,10 +57,16 @@ const Input = styled.input`
     &:invalid {
         border-bottom: 1px solid red;
     }
-
+    
+    &:disabled {
+        background-color: #d1d1d1; 
+        border-bottom: 1px solid grey;
+        color: black;
+        cursor: not-allowed;
+    }
 
     @media (max-width: 500px) {
-        min-width: 220px;
+        min-width: 150px;
     }
 `
 
@@ -76,8 +81,25 @@ const Button = styled.button`
     font-family: 'Montserrat', sans-serif;
 
     &:disabled {
-        background-color: transparent; 
-        color: grey;
+        background-color: #d2d2d2;
+        color: #5f5f5f;
+    }
+`
+
+const Select = styled.select`
+    display: block;
+    width: 100%;
+    padding: 0.5em;
+    border: none;
+    border-bottom: 1px solid red;
+    background: transparent;
+
+    &:valid {
+        border-bottom: 2px solid #000;
+    }
+
+    &:invalid {
+        border-bottom: 1px solid red;
     }
 `
 
@@ -107,6 +129,11 @@ const CreateAccount = () => {
     const user = useContext(UserContext)
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [displayName, setDisplayName] = useState("");
+    const [userType, setUserType] = useState("");
+    const [busNumber, setBusNumber] = useState("");
+    const [showBusNumber, setShowBusNumber] = useState(true)
+    const [showLoading, setShowLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState("Start To Create Account !");
     const [validateForm, setValidateForm] = useState(true)
 
@@ -122,14 +149,42 @@ const CreateAccount = () => {
         setValidateForm(!pass)
     }
 
+    const handleDispalyName = (e) => {
+        setDisplayName(e.target.value);
+        let pass = document.querySelector("form").checkValidity()
+        setValidateForm(!pass)
+    }
+
+    const handleBusNumber = (e) => {
+        setBusNumber(e.target.value);
+        let pass = document.querySelector("form").checkValidity()
+        setValidateForm(!pass)
+    }
+
+    const handleUserType = (e) => {
+        setUserType(e.target.value)
+        if (e.target.value === "Driver") {
+            setShowBusNumber(false)
+        } else {
+            setShowBusNumber(true)
+        }
+    }
+
     const handleSignUp = (e) => {
         e.preventDefault()
+        setShowLoading(true)
+
+        // submitBtn.innerHTML = "<div>" + <MoonLoader /> + "</div>"
 
         axios.post("https://alaric-server.herokuapp.com/", {
             email: email,
-            password: password
+            password: password,
+            userType: userType,
+            busNumber: busNumber,
+            displayName: displayName
         }).then(r => {
             setErrorMessage("Now you can Login")
+            setShowLoading(false)
         }).catch(e => {
             setErrorMessage("Something went wrong !")
         })
@@ -151,7 +206,13 @@ const CreateAccount = () => {
                 {user ? <Redirect to="/" noThrow /> : (
                     <form onSubmit={handleSignUp}>
                         <Heading>Join Us</Heading>
-                        <Tagline style={{ textAlign: "center", color: "red", fontWeight: 600 }}>{errorMessage}</Tagline>
+                        <Tagline style={{
+                            textAlign: "center",
+                            color: "white",
+                            padding: "0.5em 0em",
+                            fontWeight: 600,
+                            background: "black"
+                        }}>{errorMessage}</Tagline>
                         <FormContainer>
                             <label htmlFor="email"></label>
                             <Input
@@ -177,10 +238,44 @@ const CreateAccount = () => {
                             />
                         </FormContainer>
                         <FormContainer>
-                            <Button type="submit" disabled={validateForm}>
-                                Create An Account
-                            </Button>
-                            <MyLink to="/login">Sign In</MyLink>
+                            <Input
+                                type="text"
+                                value={displayName}
+                                placeholder="Display Name"
+                                id="displayName"
+                                required
+                                onChange={handleDispalyName}
+                            />
+                        </FormContainer>
+                        <FormContainer>
+                            <Select value={userType} onChange={handleUserType}>
+                                <option>User</option>
+                                <option>Conductor</option>
+                                <option>Driver</option>
+                            </Select>
+                        </FormContainer>
+                        <FormContainer>
+                            <Input
+                                type="text"
+                                value={busNumber}
+                                placeholder="Bus Number"
+                                id="busNumber"
+                                required={!showBusNumber}
+                                disabled={showBusNumber}
+                                onChange={handleBusNumber}
+                            />
+                        </FormContainer>
+                        <FormContainer>
+                            {showLoading ? (
+                                <MoonLoader size={30} color="black" />
+                            ) : (
+                                <Button type="submit" id="submit" disabled={validateForm}>
+                                    create a Account
+                                </Button>
+                            )}
+                            <div style={{ padding: "1em" }}>
+                                <MyLink to="/login">Sign In</MyLink>
+                            </div>
                         </FormContainer>
                     </form>
                 )}

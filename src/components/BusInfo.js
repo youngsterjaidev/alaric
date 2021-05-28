@@ -137,7 +137,6 @@ const Payment = ({ setShowModal, bus }) => {
     const [isDisabled, setIsDisabled] = useState(true);
 
     const calculatePrice = (dest) => {
-        console.log("button is presssed");
         firebase
             .firestore()
             .collection("routes")
@@ -157,6 +156,7 @@ const Payment = ({ setShowModal, bus }) => {
                 });
             });
     };
+
     useEffect(() => {
         firebase
             .firestore()
