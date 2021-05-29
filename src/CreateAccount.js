@@ -163,7 +163,7 @@ const CreateAccount = () => {
 
     const handleUserType = (e) => {
         setUserType(e.target.value)
-        if (e.target.value === "Driver") {
+        if (e.target.value === "driver") {
             setShowBusNumber(false)
         } else {
             setShowBusNumber(true)
@@ -249,9 +249,9 @@ const CreateAccount = () => {
                         </FormContainer>
                         <FormContainer>
                             <Select value={userType} onChange={handleUserType}>
-                                <option>User</option>
-                                <option>Conductor</option>
-                                <option>Driver</option>
+                                <option value="user">User</option>
+                                <option value="conductor">Conductor</option>
+                                <option value="driver">Driver</option>
                             </Select>
                         </FormContainer>
                         <FormContainer>

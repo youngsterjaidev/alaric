@@ -71,12 +71,16 @@ const ReactMapbox = () => {
         try {
             const dbRef = firebase.database().ref().child("location");
             dbRef.on("value", (snapshot) => {
-                let arr = [];
-                Object.keys(snapshot.val()).map((key) => {
-                    let data = snapshot.val()[key];
-                    arr.push(data);
-                });
-                setMarkers(arr);
+                if (snapshot.val()) {
+                    let arr = [];
+                    Object.keys(snapshot.val()).map((key) => {
+                        let data = snapshot.val()[key];
+                        arr.push(data);
+                    });
+                    setMarkers(arr);
+                } else {
+                    return;
+                }
             });
         } catch (e) {
             console.log("Error Occured while checking for new data", e);
@@ -174,7 +178,7 @@ const ReactMapbox = () => {
     });
 
     useEffect(() => {
-        if (map.current) return; // initialize map only one
+        if (!map.current) return; // initialize map only one
         if (!showMap) {
             map.current.remove();
             setInterval(async () => {
@@ -232,13 +236,15 @@ const ReactMapbox = () => {
             {showMap ? (
                 <div ref={mapContainer} style={mapStyle}></div>
             ) : (
-                <div style={{
-                    width: "100%",
-                    height: "100vh",
-                    background: "#f2f2f2",
-                    display: "grid",
-                    placeItems: "center",
-                }}>
+                <div
+                    style={{
+                        width: "100%",
+                        height: "100vh",
+                        background: "#f2f2f2",
+                        display: "grid",
+                        placeItems: "center",
+                    }}
+                >
                     <h3>Sending Your Location_</h3>
                 </div>
             )}
