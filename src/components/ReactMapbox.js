@@ -75,7 +75,6 @@ const ReactMapbox = () => {
                             longitude: longitude,
                             uid: user.uid,
                             email: user.email,
-                            busNumber: userData.busNumber
                         },
                     },
                     (err) => {
