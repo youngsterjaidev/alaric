@@ -180,15 +180,20 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("Welcome Back !");
     const [showLoading, setShowLoading] = useState(false);
+    const [errorColor, setErrorColor] = useState("black")
     const [validateForm, setValidateForm] = useState(true);
 
     const handleEmail = (e) => {
         setEmail(e.target.value);
+        setErrorColor("black")
+        setErrorMessage("Welcome Back !")
         let pass = document.querySelector("form").checkValidity();
         setValidateForm(!pass);
     };
 
     const handlePassword = (e) => {
+        setErrorColor("black")
+        setErrorMessage("Welcome Back !")
         setPassword(e.target.value);
         let pass = document.querySelector("form").checkValidity();
         setValidateForm(!pass);
@@ -208,6 +213,8 @@ const Login = () => {
             .catch((e) => {
                 console.log("Error will", e);
                 setErrorMessage("Authentication Failed !");
+                setShowLoading(false)
+                setErrorColor("red")
             });
     };
 
@@ -237,14 +244,16 @@ const Login = () => {
                     {user ? (
                         <Redirect to="/home" noThrow />
                     ) : (
-                        <form onSubmit={handleLogin}>
+                        <form style={{
+                            width: "100%"
+                        }} onSubmit={handleLogin}>
                             <Heading>Hey you are back !!!</Heading>
                             <Tagline
                                 style={{
                                     textAlign: "center",
                                     color: "#fff",
                                     fontWeight: 600,
-                                    backgroundColor: "black",
+                                    backgroundColor: errorColor,
                                     padding: "0.5em 0em"
                                 }}
                             >
@@ -276,9 +285,9 @@ const Login = () => {
                                 {showLoading ? (
                                     <MoonLoader size={30} color="black" />
                                 ) : (
-                                <Button type="submit" disabled={validateForm}>
-                                    Login
-                                </Button>
+                                    <Button type="submit" disabled={validateForm}>
+                                        Login
+                                    </Button>
                                 )}
                             </FormContainer>
                             <FormContainer style={{ paddingTop: "0em" }}>

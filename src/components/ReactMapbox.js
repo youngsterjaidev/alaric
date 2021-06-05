@@ -3,13 +3,14 @@ import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-load
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import firebase from "firebase/app";
-import { navigate } from "@reach/router";
+import { navigate, redirectTo, Redirect } from "@reach/router";
 import Illustrations from "../assets";
 import UserContext from "../UserContext.js";
 import SidebarWrapper from "./SidebarWrapper.js";
 import MapMarker from "./MapMarker.js";
 import ProfileBar from "./ProfileBar.js";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { RiUDiskLine, RiBusLine } from "react-icons/ri";
 
 mapboxgl.accessToken =
     "pk.eyJ1IjoiamFpZGV2djk5OSIsImEiOiJja25vcHhkNjExYmR4MnZwcmU3MG9wd2hlIn0.YV5iqi1TiI1nSWQd-bQBmA";
@@ -31,6 +32,12 @@ const bounds = [
     [78.05479, 30.43056],
 ];
 
+const options = {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 3000,
+};
+
 const store = {};
 
 const ReactMapbox = () => {
@@ -48,6 +55,48 @@ const ReactMapbox = () => {
     const [markers, setMarkers] = useState([
         { currentLocation: { longitude: 30.5, latitude: 50.5 } },
     ]);
+
+    const success = async (pos) => {
+        // get all the latitude and longitude from the argument
+        const { latitude, longitude } = pos.coords;
+
+        console.log(" The Cords", pos.coords);
+
+        try {
+            await firebase
+                .database()
+                .ref()
+                .child("location")
+                .child(user.uid)
+                .set(
+                    {
+                        currentLocation: {
+                            latitude: latitude,
+                            longitude: longitude,
+                            uid: user.uid,
+                            email: user.email,
+                            busNumber: userData.busNumber
+                        },
+                    },
+                    (err) => {
+                        if (err) {
+                            console.log(
+                                "Error Occured while set an entry in database ! :",
+                                err
+                            );
+                        } else {
+                            console.log("Location send Successfully !");
+                        }
+                    }
+                );
+        } catch (e) {
+            console.log("Error Occured while sending the location :", e);
+        }
+    };
+
+    const error = (err) => {
+        console.log("Error (${err.code}) : err.message");
+    };
 
     const _fetchUserData = async () => {
         try {
@@ -89,14 +138,23 @@ const ReactMapbox = () => {
 
     const _addMarkerToMap = (tempMarker) => {
         tempMarker.forEach((marker) => {
-            const { longitude, latitude, uid } = marker.currentLocation;
-            store[uid] = new mapboxgl.Marker({
-                draggable: true,
-            })
+            const { longitude, latitude, uid, busNo } = marker.currentLocation;
+
+            var el = document.createElement("div");
+            el.className = "custom-marker";
+            el.key = uid;
+
+            el.onclick = () => {
+                navigate("/home")
+                console.log(busNo);
+                navigate(`/home/${busNo}`);
+            };
+
+            store[uid] = new mapboxgl.Marker(el)
                 .setLngLat([longitude, latitude])
                 .setPopup(
                     new mapboxgl.Popup({ offset: 25 }).setHTML(
-                        "<h3>" + uid + "</h3><p>" + uid + "</p>"
+                        "<p>" + uid + "</p>"
                     )
                 )
                 .addTo(map.current);
@@ -158,7 +216,7 @@ const ReactMapbox = () => {
             zoom: zoom,
         });
 
-        map.current.addControl(directions, "top-right");
+        //map.current.addControl(directions, "top-right");
 
         _fetchUserData();
 
@@ -166,13 +224,17 @@ const ReactMapbox = () => {
             _fetchMarkerData();
             _checkForNewData();
         });
+
+        return () => {
+            map.current.remove();
+        };
     }, []);
 
     useEffect(() => {
         if (map.current) return; // wait for map to initialize
         map.current.on("move", () => {
-            setLng(map.current.getCenter().lng.toFixed(4));
-            setLat(map.current.getCenter().lat.toFixed(4));
+            setLng(map.current.getCenter());
+            setLat(map.current.getCenter());
             setZoom(map.current.getZoom().toFixed(2));
         });
     });
@@ -181,43 +243,53 @@ const ReactMapbox = () => {
         if (!map.current) return; // initialize map only one
         if (!showMap) {
             map.current.remove();
-            setInterval(async () => {
-                try {
-                    await navigator.geolocation.getCurrentPosition((e) => {
-                        firebase
-                            .database()
-                            .ref()
-                            .child("location")
-                            .child(user.uid)
-                            .set(
-                                {
-                                    currentLocation: {
-                                        latitude: e.coords.latitude,
-                                        longitude: e.coords.longitude,
-                                        uid: user.uid,
-                                    },
-                                },
-                                (err) => {
-                                    if (err) {
-                                        console.log(
-                                            "Error Occured while register the information ",
-                                            err
-                                        );
-                                    } else {
-                                        console.log(
-                                            "Location send successfully !"
-                                        );
-                                    }
-                                }
-                            );
-                    });
-                } catch (e) {
-                    console.log(
-                        "Error Occured while sending the location !",
-                        e
-                    );
-                }
-            }, 5000);
+            // setting a function that watch the position of the user
+            // and send to server along the location change with time
+
+            let watchId = navigator.geolocation.watchPosition(
+                success,
+                error,
+                options
+            );
+            console.log(watchId);
+
+            // setInterval(async () => {
+            //     try {
+            //         await navigator.geolocation.getCurrentPosition((e) => {
+            //             firebase
+            //                 .database()
+            //                 .ref()
+            //                 .child("location")
+            //                 .child(user.uid)
+            //                 .set(
+            //                     {
+            //                         currentLocation: {
+            //                             latitude: e.coords.latitude,
+            //                             longitude: e.coords.longitude,
+            //                             uid: user.uid,
+            //                         },
+            //                     },
+            //                     (err) => {
+            //                         if (err) {
+            //                             console.log(
+            //                                 "Error Occured while register the information ",
+            //                                 err
+            //                             );
+            //                         } else {
+            //                             console.log(
+            //                                 "Location send successfully !"
+            //                             );
+            //                         }
+            //                     }
+            //                 );
+            //         });
+            //     } catch (e) {
+            //         console.log(
+            //             "Error Occured while sending the location !",
+            //             e
+            //         );
+            //     }
+            // }, 5000);
         } else {
             console.log("User have not Permitted!");
         }

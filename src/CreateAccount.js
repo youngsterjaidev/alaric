@@ -134,11 +134,14 @@ const CreateAccount = () => {
     const [busNumber, setBusNumber] = useState("");
     const [showBusNumber, setShowBusNumber] = useState(true)
     const [showLoading, setShowLoading] = useState(false)
-    const [errorMessage, setErrorMessage] = useState("Start To Create Account !");
+    const [errorMessage, setErrorMessage] = useState("Start To Create An Account !");
+    const [errorColor, setErrorColor] = useState("black")
     const [validateForm, setValidateForm] = useState(true)
 
     const handleEmail = (e) => {
         setEmail(e.target.value);
+        setErrorColor("black")
+        setErrorMessage("Start To Create An Account !")
         let pass = document.querySelector("form").checkValidity()
         setValidateForm(!pass)
     }
@@ -185,8 +188,11 @@ const CreateAccount = () => {
         }).then(r => {
             setErrorMessage("Now you can Login")
             setShowLoading(false)
+            setErrorColor("green")
         }).catch(e => {
             setErrorMessage("Something went wrong !")
+            setShowLoading(false)
+            setErrorColor("red")
         })
     };
 
@@ -211,7 +217,7 @@ const CreateAccount = () => {
                             color: "white",
                             padding: "0.5em 0em",
                             fontWeight: 600,
-                            background: "black"
+                            background: errorColor
                         }}>{errorMessage}</Tagline>
                         <FormContainer>
                             <label htmlFor="email"></label>

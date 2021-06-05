@@ -6,7 +6,6 @@ import firebase from "firebase/app";
 
 const Container = styled.div`
     padding: 1em;
-    height: 80vh;
     width: 100%;
     overflow-y: auto;
     background-color: #eee;

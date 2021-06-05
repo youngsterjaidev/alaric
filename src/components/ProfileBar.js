@@ -19,7 +19,7 @@ const CloseWrapper = styled.div`
     position: absolute;
     width: 100%;
     height: 100vh;
-    background-color: #0000002b;
+    background-color: #0000009e;
 `;
 
 const Wrapper = styled.div`
@@ -58,13 +58,14 @@ const ProfilePicWrapper = styled.div`
 const ProfilePic = styled.img`
     border-radius: 50%;
     width: 150px;
-    height: 150px;
+    height: auto;
     box-shadow: 0px 0px 23px 20px rgb(188 188 188);
 `;
 
 const UserInfoWrapper = styled.div`
     padding: 1em;
     height: 100%;
+    border-top: 1px solid #a7a7a7;   
     position: relative;
 `;
 
@@ -72,7 +73,7 @@ const Button = styled.a`
     padding: 1em 0.5em;
     text-align: center;
     background-color: #000;
-    border-radius: 3px;
+    border-radius: 10px;
     border: none;
     color: #fff;
     display: block;
@@ -84,8 +85,29 @@ const Button = styled.a`
     font-family: "Montserrat", sans-serif;
 
     &:disabled {
-        background-color: transparent;
-        color: grey;
+        background-color: grey;
+        color: black;
+    }
+`;
+
+const Btn = styled.button`
+    padding: 1em 0.5em;
+    text-align: center;
+    background-color: #000;
+    border-radius: 10px;
+    border: none;
+    color: #fff;
+    display: block;
+    font-weight: bold;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    margin: 1em auto;
+    font-family: "Montserrat", sans-serif;
+
+    &:disabled {
+        background-color: grey;
+        color: black;
     }
 `;
 
@@ -117,11 +139,14 @@ const IconWrapper = styled.div`
 const Portal = styled.div`
     padding: 1em;
     background-color: #fff;
-    border-radius: 20px;
+    border-radius: 10px;
     z-index: 1;
-    min-height: 40vh;
-    min-width: 40%;
+    width: 40%;
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
+
+    @media (max-width: 500px) {
+        width: 90%;    
+    }
 `;
 
 const Input = styled.input`
@@ -166,6 +191,32 @@ const MySelect = styled.select`
 
 `
 
+const ModalWrapper = styled.div`
+    height: 70vh;
+    width: 100%;
+    position: relative;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 10px;
+`
+
+const ImageForm = styled.form`
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 2em 0em;
+`
+
+const Canvas = styled.canvas`
+    width: 100%;
+    height: auto;
+    border: 1px dotted #c8c8c8;
+`
+
 const ProfileBar = ({ showProfile, setShowProfile }) => {
     const user = useContext(UserContext);
     const [userInfo, setUserInfo] = useState({});
@@ -181,6 +232,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
     const [showPhoneEdit, setShowPhoneEdit] = useState(false);
     const [showBusNumberEdit, setShowBusNumberEdit] = useState(false);
     const [showTypeEdit, setShowTypeEdit] = useState(true);
+    const [showUploadBtn, setShowUploadBtn] = useState(true);
 
     const _onMouseOver = () => {
         setShowProfileEdit(true);
@@ -201,6 +253,27 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
             return;
         }
     };
+    const renderToCanvas = e => {
+        console.log("The image Event: ", e);
+
+        let uploadForm = document.getElementById("uploadForm")
+        let pass = uploadForm.checkValidity()
+        setShowUploadBtn(!pass)
+
+        let file = e.target.files[0];
+        let canvas = document.getElementById("c")
+        let canvasCtx = canvas.getContext("2d")
+
+        // create Image
+        createImageBitmap(file).then(bitmap => {
+            canvas.width = bitmap.width;
+            canvas.height = bitmap.height;
+            canvasCtx.drawImage(bitmap, 0, 0);
+        }).catch(e => {
+            console.log("Error Occured while inserting Image in Canvas ", e);
+        });
+    }
+
     const handleEmailChange = (e) => {
         if (e.key === "Enter") {
             user.updateEmail(email).then(() => {
@@ -271,24 +344,45 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
         }, console.error)
     }
 
-    useEffect(() => {
-        if(user) {
-        setDisplayName((user.displayName === null) ? "Not Set" : user.displayName);
-        setEmail(user.email);
-        setPhone(user.phone || "Not Set");
+    const handleUpload = async (e) => {
+        e.preventDefault();
 
-        firebase
-            .firestore()
-            .collection("accounts")
-            .where("uid", "==", user.uid)
-            .onSnapshot((snap) => {
-                snap.docChanges().forEach((d) => {
-                    setUserInfo(d.doc.data());
-                    setUserType(d.doc.data().type)
-                    setBusNumber(d.doc.data().busNo)
-                    setPhone(d.doc.data().phone)
+        let file = e.target[0].files[0];
+        console.log(file);
+
+        try {
+            let storageResult = await firebase.storage().ref(`profile/${user.uid}/${file.name}`).put(file)
+            let url = await storageResult.ref.getDownloadURL()
+            if (url) {
+                let User = await firebase.auth().currentUser
+                let result = await User.updateProfile({
+                    photoURL: url
+                })
+                console.log("Profile Pic is Updated", user)
+            }
+        } catch (e) {
+            console.log("Error Occured While upload the image ", e)
+        }
+    }
+
+    useEffect(() => {
+        if (user) {
+            setDisplayName((user.displayName === null) ? "Not Set" : user.displayName);
+            setEmail(user.email);
+            setPhone(user.phone || "Not Set");
+
+            firebase
+                .firestore()
+                .collection("accounts")
+                .where("uid", "==", user.uid)
+                .onSnapshot((snap) => {
+                    snap.docChanges().forEach((d) => {
+                        setUserInfo(d.doc.data());
+                        setUserType(d.doc.data().type)
+                        setBusNumber(d.doc.data().busNo)
+                        setPhone(d.doc.data().phone)
+                    });
                 });
-            });
         } else {
             navigate("/")
         }
@@ -313,7 +407,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                                 ""
                             )}
                             <ProfilePic
-                                src="https://images.pexels.com/photos/2216484/pexels-photo-2216484.jpeg?cs=srgb&dl=pexels-carlos-espinoza-2216484.jpg&fm=jpg"
+                                src={user.photoURL || "https://firebasestorage.googleapis.com/v0/b/chat-294407.appspot.com/o/events%2Fprofile.jpg?alt=media&token=84fe27e6-82e7-4599-baca-d1cd92cb9a57"}
                                 style={{ borderRadius: "50%" }}
                             />
                         </ProfilePicWrapper>
@@ -365,7 +459,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                             <div style={{ position: "relative" }}>
                                 <Heading>Bio</Heading>
                                 <p style={{ wordBreak: "break-all" }}>
-                                    fdhsafjhajdfhjakheufahdsghfhdsbchebcabeyagfdhgasfhdaghj
+                                    Hi, I am User ...
                                 </p>
                             </div>
                             <hr />
@@ -441,7 +535,27 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                                     }}
                                 >
                                     <Portal>
-                                        <h1>Modal</h1>
+                                        <ModalWrapper>
+                                            <div>
+                                                <Canvas id="c"></Canvas>
+                                            </div>
+                                            <ImageForm onSubmit={handleUpload} id="uploadForm">
+                                                <Input
+                                                    type="file"
+                                                    id="image"
+                                                    onChange={renderToCanvas}
+                                                    required
+                                                />
+                                                <Btn
+                                                    type="submit"
+                                                    style={{
+                                                        display: "block",
+                                                        width: "100%"
+                                                    }}
+                                                    disabled={showUploadBtn}
+                                                >Upload</Btn>
+                                            </ImageForm>
+                                        </ModalWrapper>
                                     </Portal>
                                     <div
                                         style={{

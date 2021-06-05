@@ -19,7 +19,6 @@ const Sidebar = styled.div`
     z-index: 5;
     margin: 1em;
     border-radius: 10px;
-    overflow-y: hidden;
     background-color: #ffffffe0;
     transition: all 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96);
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
@@ -210,7 +209,7 @@ const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
                     <div>Conductor Side</div>
                 </Sidebar>
             ) : (
-                <Sidebar style={{ height: sidebarHeight }}>
+                <Sidebar>
                     <TopBar>
                         <IconWrapper to="/home">
                             <IoIosArrowBack
@@ -236,7 +235,7 @@ const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
                             />
                         </IconWrapper>
                     </TopBar>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative", height: sidebarHeight }}>
                         <Router>
                             <BusList path="/" />
                             <BusInfo path="/:busId" />
