@@ -286,7 +286,7 @@ const Payment = ({ setShowModal, bus }) => {
 };
 
 const BusInfo = (props) => {
-    const {busId} = props
+    const { busId } = props
     const [bus, setBus] = useState({});
     const [busNo, setBusNo] = useState(busId)
     const [route, setRoute] = useState({});
@@ -315,11 +315,11 @@ const BusInfo = (props) => {
                         });
                 });
             });
-    }, []);
+    }, [busId]);
 
     useEffect(() => {
         console.log("bus", busNo)
-    }, [busNo])
+    }, [busId])
 
     return (
         <>

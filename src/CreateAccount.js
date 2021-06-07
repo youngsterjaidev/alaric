@@ -185,16 +185,36 @@ const CreateAccount = () => {
             userType: userType,
             busNumber: busNumber,
             displayName: displayName
-        }).then(r => {
-            setErrorMessage("Now you can Login")
-            setShowLoading(false)
-            setErrorColor("green")
+        }).then(async (r) => {
+            if (r) {
+                const result = await firebase.auth().signInWithEmailAndPassword(email, password)
+                if (result) {
+                    sendEmailVerfication()
+                    setShowLoading(false)
+                    setErrorColor("green")
+                } else {
+                    return
+                }
+            } else {
+                console.log("User is Not Logged in")
+            }
         }).catch(e => {
             setErrorMessage("Something went wrong !")
             setShowLoading(false)
             setErrorColor("red")
         })
     };
+
+    const sendEmailVerfication = async () => {
+        try {
+            const user = await firebase.auth().currentUser
+            console.log(user)
+            const isSend = await user.sendEmailVerification()
+            setErrorMessage("Please Check Mail for Verfication")
+        } catch (e) {
+            console.log("Error While sending the email Verfication link", e)
+        }
+    }
 
     useEffect(() => {
         // initial checking
@@ -209,82 +229,80 @@ const CreateAccount = () => {
     return (
         <AppContainer>
             <Container>
-                {user ? <Redirect to="/" noThrow /> : (
-                    <form onSubmit={handleSignUp}>
-                        <Heading>Join Us</Heading>
-                        <Tagline style={{
-                            textAlign: "center",
-                            color: "white",
-                            padding: "0.5em 0em",
-                            fontWeight: 600,
-                            background: errorColor
-                        }}>{errorMessage}</Tagline>
-                        <FormContainer>
-                            <label htmlFor="email"></label>
-                            <Input
-                                type="email"
-                                value={email}
-                                placeholder="Email"
-                                id="email"
-                                required
-                                onChange={handleEmail}
-                            />
-                        </FormContainer>
-                        <FormContainer>
-                            <label htmlFor="password"></label>
-                            <Input
-                                type="password"
-                                value={password}
-                                placeholder="Password"
-                                id="password"
-                                min="8"
-                                max="8"
-                                required
-                                onChange={handlePassword}
-                            />
-                        </FormContainer>
-                        <FormContainer>
-                            <Input
-                                type="text"
-                                value={displayName}
-                                placeholder="Display Name"
-                                id="displayName"
-                                required
-                                onChange={handleDispalyName}
-                            />
-                        </FormContainer>
-                        <FormContainer>
-                            <Select value={userType} onChange={handleUserType}>
-                                <option value="user">User</option>
-                                <option value="conductor">Conductor</option>
-                                <option value="driver">Driver</option>
-                            </Select>
-                        </FormContainer>
-                        <FormContainer>
-                            <Input
-                                type="text"
-                                value={busNumber}
-                                placeholder="Bus Number"
-                                id="busNumber"
-                                required={!showBusNumber}
-                                disabled={showBusNumber}
-                                onChange={handleBusNumber}
-                            />
-                        </FormContainer>
-                        <FormContainer>
-                            {showLoading ? (
-                                <MoonLoader size={30} color="black" />
-                            ) : (
-                                <Button type="submit" id="submit" disabled={validateForm}>
-                                    create a Account
-                                </Button>
-                            )}
-                            <div style={{ padding: "1em" }}>
-                                <MyLink to="/login">Sign In</MyLink>
-                            </div>
-                        </FormContainer>
-                    </form>
-                )}
+                <form onSubmit={handleSignUp}>
+                    <Heading>Join Us</Heading>
+                    <Tagline style={{
+                        textAlign: "center",
+                        color: "white",
+                        padding: "0.5em 0em",
+                        fontWeight: 600,
+                        background: errorColor
+                    }}>{errorMessage}</Tagline>
+                    <FormContainer>
+                        <label htmlFor="email"></label>
+                        <Input
+                            type="email"
+                            value={email}
+                            placeholder="Email"
+                            id="email"
+                            required
+                            onChange={handleEmail}
+                        />
+                    </FormContainer>
+                    <FormContainer>
+                        <label htmlFor="password"></label>
+                        <Input
+                            type="password"
+                            value={password}
+                            placeholder="Password"
+                            id="password"
+                            min="8"
+                            max="8"
+                            required
+                            onChange={handlePassword}
+                        />
+                    </FormContainer>
+                    <FormContainer>
+                        <Input
+                            type="text"
+                            value={displayName}
+                            placeholder="Display Name"
+                            id="displayName"
+                            required
+                            onChange={handleDispalyName}
+                        />
+                    </FormContainer>
+                    <FormContainer>
+                        <Select value={userType} onChange={handleUserType}>
+                            <option value="user">User</option>
+                            <option value="conductor">Conductor</option>
+                            <option value="driver">Driver</option>
+                        </Select>
+                    </FormContainer>
+                    <FormContainer>
+                        <Input
+                            type="text"
+                            value={busNumber}
+                            placeholder="Bus Number"
+                            id="busNumber"
+                            required={!showBusNumber}
+                            disabled={showBusNumber}
+                            onChange={handleBusNumber}
+                        />
+                    </FormContainer>
+                    <FormContainer>
+                        {showLoading ? (
+                            <MoonLoader size={30} color="black" />
+                        ) : (
+                            <Button type="submit" id="submit" disabled={validateForm}>
+                                create a Account
+                            </Button>
+                        )}
+                        <div style={{ padding: "1em" }}>
+                            <MyLink to="/login">Sign In</MyLink>
+                        </div>
+                    </FormContainer>
+                </form>
             </Container>
         </AppContainer>
     );

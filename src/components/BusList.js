@@ -109,7 +109,7 @@ const BusList = () => {
                 });
                 setBusesNear(busesArr)
             });
-    }, [buses]);
+    });
 
     return (
         <Container>

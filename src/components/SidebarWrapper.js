@@ -160,22 +160,22 @@ const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
     };
 
     useEffect(async () => {
-        if(user) {
-        const snap = await firebase
-            .firestore()
-            .collection("accounts")
-            .doc(user.uid)
-            .get();
-        setUserData(snap.data());
-        if (snap.data().type === "conductor") {
-            setShowConductor(true);
+        if (user) {
+            const snap = await firebase
+                .firestore()
+                .collection("accounts")
+                .doc(user.uid)
+                .get();
+            setUserData(snap.data());
+            if (snap.data().type === "conductor") {
+                setShowConductor(true);
+            } else {
+                setShowConductor(false);
+            }
         } else {
-            setShowConductor(false);
+            return
         }
-        }else {
-            navigate("/")
-        }
-    }, []);
+    }, [user, markers]);
 
     return (
         <div>

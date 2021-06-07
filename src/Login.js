@@ -294,6 +294,17 @@ const Login = () => {
                                 <MyLink to="/createAccount">
                                     Create An Account !
                                 </MyLink>
+                                <MyLink
+                                    to="/passwordReset"
+                                    style={{
+                                        margin: "0.5em 0em",
+                                        fontSize: "14px",
+                                        color: "red",
+                                        fontWeight: 800
+                                    }}
+                                >
+                                    Forgot Password !
+                                </MyLink>
                             </FormContainer>
                         </form>
                     )}

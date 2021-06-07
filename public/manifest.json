@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Alaric",
+  "name": "Alaric a bus tracking service",
   "icons": [
     {
       "src": "favicon.ico",

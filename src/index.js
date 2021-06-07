@@ -12,6 +12,7 @@ import ReactMapbox from "./components/ReactMapbox.js";
 import Login from "./Login.js";
 import Loading from "./Loading.js";
 import CreateAccount from "./CreateAccount.js";
+import PasswordReset from "./PasswordReset.js";
 
 import UserContext from "./UserContext.js";
 
@@ -49,6 +50,7 @@ const App = () => {
         <UserContext.Provider value={user}>
             <Router>
                 <Loading path="/" />
+                <PasswordReset path="/passwordReset" />
                 <ReactMapbox path="/home/*" />
                 <Login path="/login" />
                 <CreateAccount path="/createAccount" />

@@ -3,7 +3,7 @@ import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-load
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import firebase from "firebase/app";
-import { navigate, redirectTo, Redirect } from "@reach/router";
+import { redirectTo, Redirect, useNavigate } from "@reach/router";
 import Illustrations from "../assets";
 import UserContext from "../UserContext.js";
 import SidebarWrapper from "./SidebarWrapper.js";
@@ -11,6 +11,7 @@ import MapMarker from "./MapMarker.js";
 import ProfileBar from "./ProfileBar.js";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { RiUDiskLine, RiBusLine } from "react-icons/ri";
+
 
 mapboxgl.accessToken =
     "pk.eyJ1IjoiamFpZGV2djk5OSIsImEiOiJja25vcHhkNjExYmR4MnZwcmU3MG9wd2hlIn0.YV5iqi1TiI1nSWQd-bQBmA";
@@ -55,6 +56,7 @@ const ReactMapbox = () => {
     const [markers, setMarkers] = useState([
         { currentLocation: { longitude: 30.5, latitude: 50.5 } },
     ]);
+    const navigate = useNavigate()
 
     const success = async (pos) => {
         // get all the latitude and longitude from the argument
@@ -143,17 +145,15 @@ const ReactMapbox = () => {
             el.className = "custom-marker";
             el.key = uid;
 
-            el.onclick = () => {
-                navigate("/home")
-                console.log(busNo);
-                navigate(`/home/${busNo}`);
-            };
+            el.onclick = function () {
+                navigate(`/home/${busNo}`, { replace: true })
+            }
 
             store[uid] = new mapboxgl.Marker(el)
                 .setLngLat([longitude, latitude])
                 .setPopup(
                     new mapboxgl.Popup({ offset: 25 }).setHTML(
-                        "<p>" + uid + "</p>"
+                        `<Link to="/home/HP01A1233">${busNo}</Link>`
                     )
                 )
                 .addTo(map.current);
@@ -206,11 +206,10 @@ const ReactMapbox = () => {
     }, [markers]);
 
     useEffect(() => {
-        if (!user) navigate("/");
         if (map.current) return; // initialize map only one
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: "mapbox://styles/mapbox/streets-v9",
+            style: "mapbox://styles/mapbox/dark-v9",
             center: [lng, lat],
             zoom: zoom,
         });

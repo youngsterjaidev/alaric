@@ -242,6 +242,16 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
         setShowProfileEdit(false);
     };
 
+    const sendEmailVerfication = async () => {
+        try {
+            const user = await firebase.auth().currentUser
+            const isSend = await user.sendEmailVerification()
+            console.log("Email sent from here !")
+        } catch (e) {
+            console.log("Error While sending the email Verfication link", e)
+        }
+    }
+
     const handleDisplayNameChange = (e) => {
         if (e.key === "Enter") {
             user.updateProfile({
@@ -371,6 +381,9 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
             setEmail(user.email);
             setPhone(user.phone || "Not Set");
 
+            const User = firebase.auth().currentUser
+            console.log(User)
+
             firebase
                 .firestore()
                 .collection("accounts")
@@ -384,7 +397,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                     });
                 });
         } else {
-            navigate("/")
+            return
         }
     }, []);
 
