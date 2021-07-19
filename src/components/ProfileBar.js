@@ -399,7 +399,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
         } else {
             return
         }
-    }, []);
+    }, [user]);
 
     return (
         <Container>
@@ -428,7 +428,7 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                             <h2
                                 style={{
                                     textAlign: "center",
-                                    marginBottom: "2em",
+                                    marginBottom: "1em",
                                 }}
                             >
                                 User Info
@@ -452,6 +452,18 @@ const ProfileBar = ({ showProfile, setShowProfile }) => {
                                     readOnly={showDisplayNameEdit}
                                     onKeyDown={handleDisplayNameChange}
                                 />
+                            </div>
+                            <hr />
+                            <div
+                                onDoubleClick={() => setShowEmailEdit(false)}
+                                onMouseLeave={() => setShowEmailEdit(true)}
+                            >
+                                <Heading>Balance</Heading>
+                                <div style={{
+                                    fontWeight: "bolder",
+                                    fontSize: "1.2rem",
+                                    color: userInfo.balance < 5 ? "red" : "green"
+                                }}>RS. {userInfo.balance || 0}.00</div>
                             </div>
                             <hr />
                             <div

@@ -19,8 +19,6 @@ const Sidebar = styled.div`
     z-index: 5;
     margin: 1em;
     border-radius: 10px;
-    background-color: #ffffffe0;
-    transition: all 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96);
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
 
     @media (max-width: 500px) {
@@ -28,7 +26,6 @@ const Sidebar = styled.div`
         position: fixed;
         bottom: 0;
         margin: 1em 0em 0em 0em;
-        height: 8%;
         border-radius: 40px 40px 0px 0px;
     }
 `;
@@ -46,8 +43,7 @@ const TopBar = styled.div`
     align-items: center;
     padding: 1em;
     border-radius: 10px 10px 0px 0px;
-    box-shadow: 0 4px 23px 5px rgb(173 173 173 / 20%),
-        0 2px 6px rgb(197 197 197 / 18%);
+    box-shadow: 0 4px 20px 0px rgb(173 173 173 / 20%), 0 2px 1px 0px rgb(197 197 197 / 18%);
 
     @media (max-width: 500px) {
         border-radius: 50px 50px 0px 0px;
@@ -133,12 +129,11 @@ const BusContainer = styled.div`
     position: fixed;
     top: 0;
     width: 250px;
-    height: 100vh;
 `;
 
 const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
     const user = useContext(UserContext);
-    const [sidebarHeight, setSidebarHeight] = useState("78%");
+    const [sidebarHeight, setSidebarHeight] = useState("75vh");
     const [searchQuery, setSearchQuery] = useState("");
     const [userData, setUserData] = useState({});
     const [showConductor, setShowConductor] = useState(false);
@@ -152,10 +147,10 @@ const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
     };
 
     const handleHeight = (e) => {
-        if (sidebarHeight === "7%") {
-            setSidebarHeight("78%");
+        if (sidebarHeight === "0") {
+            setSidebarHeight("75vh");
         } else {
-            setSidebarHeight("7%");
+            setSidebarHeight("0");
         }
     };
 
@@ -180,7 +175,7 @@ const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
     return (
         <div>
             {showConductor ? (
-                <Sidebar style={{ height: sidebarHeight }}>
+                <Sidebar>
                     <TopBar>
                         <IconWrapper to="/home">
                             <IoIosArrowBack
@@ -235,10 +230,10 @@ const SidebarWrapper = ({ markers, setShowProfile, showProfile }) => {
                             />
                         </IconWrapper>
                     </TopBar>
-                    <div style={{ position: "relative", height: sidebarHeight }}>
+                    <div style={{ position: "relative"}}>
                         <Router>
-                            <BusList path="/" />
-                            <BusInfo path="/:busId" />
+                            <BusList sidebarHeight={sidebarHeight} path="/" />
+                            <BusInfo sidebarHeight={sidebarHeight} path="/:busId" />
                         </Router>
                     </div>
                 </Sidebar>

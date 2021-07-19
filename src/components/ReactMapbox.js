@@ -35,8 +35,8 @@ const bounds = [
 
 const options = {
     enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 3000,
+    maximumAge: 2000,
+    timeout: 2000,
 };
 
 const store = {};
@@ -209,7 +209,7 @@ const ReactMapbox = () => {
         if (map.current) return; // initialize map only one
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: "mapbox://styles/mapbox/dark-v9",
+            style: "mapbox://styles/mapbox/streets-v9",
             center: [lng, lat],
             zoom: zoom,
         });
@@ -291,7 +291,7 @@ const ReactMapbox = () => {
         } else {
             console.log("User have not Permitted!");
         }
-    }, [showMap]);
+    }, [user, showMap]);
 
     return (
         <div>

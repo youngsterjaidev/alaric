@@ -7,25 +7,29 @@ import firebase from "firebase/app";
 const Container = styled.div`
     padding: 1em;
     width: 100%;
+    height: auto;
     overflow-y: auto;
     background-color: #eee;
     box-shadow: 0 4px 23px 5px rgb(0 0 0 / 20%), 0 2px 6px rgb(0 0 0 / 15%);
+    transition: all 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96);
 `;
 
 const Card = styled(Link)`
     width: 100%;
     padding: 1em;
     display: flex;
-    border-radius: 3px;
+    border-radius: 10px;
     justify-content: flex-start;
     align-items: center;
     background-color: #fff;
+    color: #000;
+    font-weight: 700;
     text-decoration: none;
     margin-botto0m: 0.2em;
     border: 3px solid #eee;
 
     &:hover {
-        border: 3px solid #d7d7d7;
+        border: 3px solid #a8a8a8;
     }
 `;
 
@@ -44,7 +48,7 @@ const Input = styled.input`
     padding: 1em;
     display: block;
     width: 100%;
-    border-radius: 3px;
+    border-radius: 10px;
     border: 2px solid #d7d7d7;
 `;
 
@@ -54,7 +58,8 @@ const HeaderThree = styled.h3`
     text-align: left;
 `;
 
-const BusList = () => {
+const BusList = ({ sidebarHeight }) => {
+    const [padd, setPadd] = useState("1em");
     const [buses, setBuses] = useState([]);
     const [busesNear, setBusesNear] = useState([]);
     const [searchStr, setSearchStr] = useState("");
@@ -77,7 +82,7 @@ const BusList = () => {
             .where("stops", "array-contains", searchStr)
             .onSnapshot((snap) => {
                 snap.docChanges().forEach((d) => {
-                    setRouteId(d.doc.id)
+                    setRouteId(d.doc.id);
                     firebase
                         .firestore()
                         .collection("buses")
@@ -85,8 +90,8 @@ const BusList = () => {
                         .onSnapshot((snapshot) => {
                             let busArr = [];
                             snapshot.docChanges().forEach((data) => {
-                                console.log(data.doc.data())
-                                console.log(busArr)
+                                console.log(data.doc.data());
+                                console.log(busArr);
                                 busArr.push(data.doc.data());
                                 setReady(false);
                                 setBuses(busArr);
@@ -107,12 +112,25 @@ const BusList = () => {
                     busesArr.push(bus.doc.data());
                     // setBusesNear(busesArr);
                 });
-                setBusesNear(busesArr)
+                setBusesNear(busesArr);
             });
     });
 
+    useEffect(() => {
+        if (sidebarHeight === "0") {
+            setPadd("0em");
+        } else {
+            setPadd("1em");
+        }
+    }, [sidebarHeight]);
+
     return (
-        <Container>
+        <Container
+            style={{
+                height: sidebarHeight,
+                padding: padd
+            }}
+        >
             <Form onSubmit={handleSubmit}>
                 <Input
                     type="text"
@@ -145,12 +163,14 @@ const BusList = () => {
                                     Here your result !
                                 </HeaderThree>
                                 {buses.map((bus) => {
-                                    console.log("addfdf", bus)
+                                    console.log("addfdf", bus);
                                     return (
                                         <div>
-                                            <Card to={bus.busNo}>Red{bus.busNo}</Card>
+                                            <Card to={bus.busNo}>
+                                                {bus.busNo}
+                                            </Card>
                                         </div>
-                                    )
+                                    );
                                 })}
                             </>
                         )}
