@@ -214,7 +214,7 @@ const ReactMapbox = () => {
             zoom: zoom,
         });
 
-        //map.current.addControl(directions, "top-right");
+        map.current.addControl(directions, "top-right");
 
         _fetchUserData();
 
