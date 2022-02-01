@@ -4,7 +4,7 @@ import { Illustrations } from "../assets";
 import UserContext from "../UserContext.js";
 import Modal from "../Modal";
 import { FiEdit2 } from "react-icons/fi";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import { navigate } from "@reach/router";
 
 const Container = styled.div`

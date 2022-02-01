@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import { redirectTo, Redirect, useNavigate } from "@reach/router";
 import Illustrations from "../assets";
 import UserContext from "../UserContext.js";

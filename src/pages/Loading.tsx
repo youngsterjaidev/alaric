@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Redirect, navigate } from '@reach/router' 
-import firebase from 'firebase'
+import { Redirect, navigate } from '@reach/router'
+import firebase from 'firebase/compat/app'
 
-import UserContext from './UserContext.js'
+import UserContext from '../UserContext.js'
+import { useAuth } from '../custom-hooks/'
 
 const Loading = () => {
     const [isLogin, setIsLogin] = useState(false)
-    const user = useContext(UserContext)
+    const { user } = useAuth()
 
     useEffect(() => {
         console.log("The User Will Be ", user)
     })
+
+    // check if the user is null send the user to login page
+
+    // if the user  is login send the user to home page
 
     return (
         <div>

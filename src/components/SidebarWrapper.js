@@ -6,7 +6,7 @@ import { FiUser } from "react-icons/fi";
 import { IoIosArrowBack } from "react-icons/io";
 import { Router, Link, navigate } from "@reach/router";
 import UserContext from "../UserContext.js";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import { jsx, css } from "@emotion/react";
 
 import BusList from "./BusList";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
-import firebase from "firebase/app"
+import firebase from "firebase/compat/app"
 
 
 const MapMarker = ({ map }) => {

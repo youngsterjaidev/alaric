@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link } from "@reach/router";
 import styled from "styled-components";
 import MoonLoader from "react-spinners/MoonLoader";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
+
+import HomeSearch from "./HomeSearch"
 
 const Container = styled.div`
     padding: 1em;
@@ -109,7 +111,7 @@ const BusList = ({ sidebarHeight }) => {
             .onSnapshot((snap) => {
                 let busesArr = [];
                 snap.docChanges().forEach((bus) => {
-                    busesArr.push(bus.doc.data());
+                    busesArr.push({ ...bus.doc.data(), busId: bus.doc.id });
                     // setBusesNear(busesArr);
                 });
                 setBusesNear(busesArr);
@@ -124,6 +126,10 @@ const BusList = ({ sidebarHeight }) => {
         }
     }, [sidebarHeight]);
 
+    useEffect(() => {
+        console.log("re-render : ", buses)
+    }, [buses])
+
     return (
         <Container
             style={{
@@ -131,14 +137,15 @@ const BusList = ({ sidebarHeight }) => {
                 padding: padd
             }}
         >
-            <Form onSubmit={handleSubmit}>
+            {/*<Form onSubmit={handleSubmit}>
                 <Input
                     type="text"
                     placeholder="search"
                     value={searchStr}
                     onChange={handleSearch}
                 />
-            </Form>
+            </Form>*/}
+            <HomeSearch setReady={setReady} setBuses={setBuses} />
             {busesNear.length === 0 ? (
                 <LoadingWrapper>
                     <MoonLoader size={40} />
@@ -150,7 +157,7 @@ const BusList = ({ sidebarHeight }) => {
                             <>
                                 <HeaderThree>Buses Near By You</HeaderThree>
                                 {busesNear.map((bus) => (
-                                    <Card to={`${bus.busNo}`}>{bus.busNo}</Card>
+                                    <Card to={`${bus.busId}`}>{bus.busId}</Card>
                                 ))}
                             </>
                         ) : (
@@ -166,8 +173,8 @@ const BusList = ({ sidebarHeight }) => {
                                     console.log("addfdf", bus);
                                     return (
                                         <div>
-                                            <Card to={bus.busNo}>
-                                                {bus.busNo}
+                                            <Card to={bus.busId}>
+                                                {bus.busId}
                                             </Card>
                                         </div>
                                     );

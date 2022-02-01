@@ -7,7 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import styled from "styled-components";
-import firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import Modal from "../Modal";
 import { BsArrowLeftRight, BsClock } from "react-icons/bs";
 import { IoMdWalk } from "react-icons/io";

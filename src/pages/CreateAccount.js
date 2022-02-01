@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, navigate, Redirect } from "@reach/router";
-import firebase from 'firebase'
+import firebase from 'firebase/compat/app'
 import axios from "axios"
 import styled from 'styled-components'
 import MoonLoader from "react-spinners/MoonLoader";
-import UserContext from './UserContext.js'
+import UserContext from '../UserContext.js'
 
 
 const AppContainer = styled.div`
@@ -179,7 +179,7 @@ const CreateAccount = () => {
 
         // submitBtn.innerHTML = "<div>" + <MoonLoader /> + "</div>"
 
-        axios.post("https://alaric-server.herokuapp.com/", {
+			axios.post("http://192.168.18.235:5050", {
             email: email,
             password: password,
             userType: userType,
