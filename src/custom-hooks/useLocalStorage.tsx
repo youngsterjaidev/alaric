@@ -17,6 +17,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
             // get the localstorage value by key
             let item = window.localStorage.getItem(key)
             // parse stored json or if none return initialValue
+						console.log("storage run : ", JSON.parse(item))
             return item ? JSON.parse(item) : initialValue
         } catch (e) {
             console.error("Error Occured while setting the initial value in state: ", e)
@@ -42,7 +43,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
             setStoredValue(valueToStore)
 
             // set the localstorage
-            window.localStorage.setItem(key, valueToStore)
+            window.localStorage.setItem(key, JSON.stringify(valueToStore))
         } catch (e) {
             console.error("Error occured while setting the localStorage value : ", e)
         }

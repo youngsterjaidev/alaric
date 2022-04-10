@@ -1,8 +1,11 @@
 import { useAuth, ProviderAuth } from "./useAuth"
-import { ToggleTheme } from "./useTheme"
+import { ToggleTheme, useTheme } from "./useTheme"
+import { useLocalStorage } from "./useLocalStorage.tsx"
 
 export {
 	useAuth,
 	ProviderAuth,
-	ToggleTheme
+	ToggleTheme,
+	useTheme,
+	useLocalStorage
 }

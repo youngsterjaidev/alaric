@@ -3,11 +3,15 @@ import EasyToUse from "./easyToUse.svg"
 import Currency from "./currency.svg"
 import Online from "./online.svg"
 import Bus from "./bus.png"
+import Google from "./google.svg"
+import Facebook from "./facebook.svg"
 
 export const Illustrations = {
     Time,
     EasyToUse,
     Currency,
     Online,
-    Bus
+    Bus,
+		Google,
+		Facebook
 }

@@ -1,4 +1,4 @@
-import { Primary, Grayscale } from "./colors"
+import { Primary, Grayscale, Success } from "./colors"
 export { primaryFont } from "./typography"
 
 export const defaultTheme = {
@@ -11,6 +11,7 @@ export const defaultTheme = {
 	__line: Grayscale["Input Background"],
 	__placeholder: Grayscale["Title-Active"],
 	__outlineColor: Primary.Fade, 
+	__success: Success.Default
 }
 
 export const darkTheme = {
@@ -22,5 +23,6 @@ export const darkTheme = {
 	__background: Primary.DarkMode,
 	__line: Grayscale["Title-Active"],
 	__placeholder: Grayscale.Placeholder,
-	__outlineColor: Grayscale.OutlineColor
+	__outlineColor: Grayscale.OutlineColor,
+	__success: Success.Default,
 }

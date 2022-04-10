@@ -10,6 +10,7 @@ export const Input = styled.input`
 	font-family: ${primaryFont};
 	font-weight: 600;
 	outline: none;
+	color: ${props => props.theme.__success};
 	transition: color 0.2s linear outline 0.2s linear;
 
 	&::placeholder {
@@ -28,5 +29,6 @@ export const Input = styled.input`
 
 	@media (max-width: 550px) {
 		min-width: auto;
+		width: 100%;
 	}
 `
