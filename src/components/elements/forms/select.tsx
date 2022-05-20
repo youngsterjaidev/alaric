@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import { primaryFont } from "../../../utils"
 
-export const Input = styled.input`
+export const Select = styled.select`
 	background: ${props => props.theme.__line};
 	border-radius: 4em;
 	padding: 1em 2.4em;

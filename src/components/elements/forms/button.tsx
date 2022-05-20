@@ -55,10 +55,12 @@ export const Button = styled.button<Props>`
 
 	${props => props.secondary && `
 		border: 2px solid ${props.theme.__primary};
+		background: ${props.theme.__background};
 		color: ${props.theme.__primary};
 
 		&:hover {
 			border: 2px solid ${props.theme.__primaryHoverColor};
+			color: ${props.theme.__buttonColor};
 		}
 
 		&:focus {
@@ -91,5 +93,3 @@ export const Button = styled.button<Props>`
 		}
 	`}
 `
-
-//const SecondaryButton = styled(Button)``

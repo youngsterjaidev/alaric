@@ -41,6 +41,7 @@ export const Warning = {
 }
 
 export const Grayscale = {
+	"Off-Black": "#000000",
 	"Title-Active": "#14142B",
 	"Body": "#4E4B66",
 	"Label": "#6E7191",

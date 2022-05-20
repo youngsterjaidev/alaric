@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
+const f = "5";
+
 const modalRoot = document.getElementById("modal")
 
 const Modal = ({ children }) => {

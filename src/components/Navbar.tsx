@@ -2,6 +2,7 @@
 import React, { useState, useEffect }from "react"
 import styled from "styled-components"
 import { Button, Input } from "../components"
+import { ThemeToggle  } from "../assets"
 import { Link } from "@reach/router"
 import { useTheme } from "../custom-hooks"
 import { IoIosArrowBack, IoIosMenu } from "react-icons/io"
@@ -34,13 +35,21 @@ const Form = styled.form`
 const MyLink = styled(Link)`
 	text-decoration: none;
 	margin-right: 1em;
+	padding: 0.5em 1em;
 	font-weight: 600;
+	border-radius: 4em;
 	color: ${props => props.theme.__textColor};
+	
+	&:hover {
+		background: ${props => props.theme.__textColor};
+		color: ${props => props.theme.__background};
+	}
 `
 
 const MyButton = styled(Button)`
-	margin-left: 0.5em;
-	border-radius: 0.6em;
+	margin-left: 1em;
+	border-radius: 4em;
+	
 `
 
 const MobileNav = styled.div`
@@ -75,16 +84,18 @@ export const Navbar = () => {
 	return (
 		<>
 		<Nav>
-			<div>
-				<MyLink to="" >Home</MyLink>
-				<MyLink to="">Live</MyLink>
-				<MyLink to="">Help</MyLink>
-				<button onClick={() => {
+			<div style={{ display: "flex", alignItems: "center" }}>
+				<MyLink to="/home" >Home</MyLink>
+				<MyLink to="/live">Live</MyLink>
+				<MyLink to="/contact">Contact</MyLink>
+				<MyLink to="/help">Help</MyLink>
+				<ThemeToggle onClick={() => {
+					console.log("Ready !")
 					setTheme(theme === "dark" ? "light" : "dark")
 
 					console.log("red")
 					}
-				}>Light</button>
+				}>Light</ThemeToggle>
 			</div>
 			<div>
 			<Form>
@@ -96,7 +107,8 @@ export const Navbar = () => {
 						<option value="Opera" />
 						<option value="Safari" />
 					</datalist>
-				<MyButton type="submit" primary small>Search</MyButton>
+				<MyButton secondary type="submit" primary small>Search</MyButton>
+				<MyButton type="submit" primary small>Login</MyButton>
 			</Form>
 			</div>
 

@@ -8,9 +8,9 @@ import { Router, Link } from "@reach/router";
 import { ThemeProvider } from "styled-components";
 //import App from "./components/App.js";
 //import ReactMap from "./components/ReactMap.js";
-import ReactMapbox from "./components/ReactMapbox.js";
+import ReactMapbox from "./components/ReactMapbox";
 
-import { Login, Loading, CreateAccount, PasswordReset } from "./pages";
+import { Login, Loading, CreateAccount, PasswordReset, Home } from "./pages";
 import styled from "styled-components";
 
 import {
@@ -59,10 +59,9 @@ const App = (props) => {
 	//     });
 	// }, []);
 
-	console.log("https://ov5i1h.sse.codesandbox.io/");
 	console.log("User get it : ", user);
 
-
+/*
 	if (!token) {
 		return (
 			<Router>
@@ -73,10 +72,18 @@ const App = (props) => {
 				<CreateAccount path="/createAccount" />
 			</Router>
 		);
-	}
+	}*/
 
 	// fallback
-	return <Loading />
+	return (
+		<Router>
+			<Loading path="/"/>
+			<Login path="/login" />
+			<Home path="/home" />
+			<ReactMapbox path="/live" />
+			<CreateAccount path="/createAccount" />
+		</Router>
+	)
 };
 
 // To Level component

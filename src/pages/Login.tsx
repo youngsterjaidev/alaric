@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, navigate } from "@reach/router";
 import styled from "styled-components";
-import { Button, Input, Navbar } from "../components";
+import { Button, Input, Navbar, Notification } from "../components";
 import { Illustrations } from "../assets";
 import { useAuth } from "../custom-hooks"
 
 const SubmitButton = styled(Button)`
-	border-radius: 0.6em;
+	border-radius: 4em;
 `;
 
 const Container = styled.div`
@@ -87,7 +87,7 @@ const ThridPartyLogin = styled.div`
 const Login = () => {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
-	const { user, signin, signWithGoogle } = useAuth()
+	const { user, signin, signWithGoogle, signWithFacebook } = useAuth()
 
 	const handleLogin = (e: React.SubmitButton) => {
 		try {
@@ -112,24 +112,24 @@ const Login = () => {
 			// get the target name
 			let name = e.target.name
 			let value = e.target.value
-			
-			if(name === "email") {
+
+			if (name === "email") {
 				setEmail(value)
 				return
 			}
 
-			if(name === "password") {
+			if (name === "password") {
 				setPassword(value)
 				return
 			}
 
 			return
-		} catch(e) { 
+		} catch (e) {
 			console.error("Error Occured in the fn:handleChange - ", error)
 		}
 	}
 
-	if(user) {
+	if (user) {
 		navigate("/")
 	}
 
@@ -193,12 +193,12 @@ const Login = () => {
 							<img
 								src={Illustrations.Google}
 								alt="google image"
-								onClick={() => { signWithGoogle()}}
+								onClick={() => { signWithGoogle() }}
 							/>
 							<img
 								src={Illustrations.Facebook}
 								alt="google image"
-								onClick={() => {}}
+								onClick={() => { signWithFacebook() }}
 							/>
 						</ThridPartyLogin>
 					</PageFooter>

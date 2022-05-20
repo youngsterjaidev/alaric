@@ -7,11 +7,12 @@ export const defaultTheme = {
 	__primaryActiveColor: Primary.Dark,
 	__textColor: Grayscale.Body,
 	__buttonColor: Grayscale["Off-White"],
-	__background: Grayscale.Background,
+	__background: Grayscale["Background"],
 	__line: Grayscale["Input Background"],
-	__placeholder: Grayscale["Title-Active"],
+	__placeholder: Grayscale.Placeholder,
 	__outlineColor: Primary.Fade, 
-	__success: Success.Default
+	__success: Success.Default,
+	__container: Grayscale["Off-White"]
 }
 
 export const darkTheme = {
@@ -25,4 +26,5 @@ export const darkTheme = {
 	__placeholder: Grayscale.Placeholder,
 	__outlineColor: Grayscale.OutlineColor,
 	__success: Success.Default,
+	__container: Grayscale["Off-Black"]
 }

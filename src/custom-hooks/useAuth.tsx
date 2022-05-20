@@ -5,9 +5,12 @@ import {
 	signOut,
 	sendPasswordResetEmail,
 	confirmPasswordReset,
+	fetchSignInMethodsForEmail,
 	signInWithRedirect,	
+	signInWithPopup,
 	onAuthStateChanged,
 	GoogleAuthProvider,
+	FacebookAuthProvider,
 	getRedirectResult
 } from "firebase/auth"
 import { useLocalStorage} from "./useLocalStorage.tsx"
@@ -15,6 +18,7 @@ import { auth } from "../firebase"
 
 // google provider
 const provider = new GoogleAuthProvider()
+const facebookProvider = new FacebookAuthProvider()
 
 // creating the authContext that let to you pass the user object
 // in the applications
@@ -81,6 +85,37 @@ const useProviderAuth = () => {
 		}
 	}
 
+	// sign in with facebook
+	const signWithFacebook = async () => {
+		try {
+			let response = await signInWithPopup(auth, facebookProvider)
+
+			console.log("response : ", response )
+
+			// this gives you a Google Access Token. You can use it to access Google APIs
+			//const credential = GoogleAuthProvider.credentialFromResult(response)
+			//const token = credential?.accessToken
+
+			// The signed-in user info
+			setUser(response?.user)
+			setLocalStorage({ accessToken: user.accessToken})
+			return response?.user
+		} catch(e) {
+
+			console.log(await fetchSignInMethodsForEmail(auth, "jaidev999@gmail.com"))
+
+			// Catching Error for debuging
+			console.error("Error Occured in sign with the facebook fn: signWithFacebook : ", e)
+			// handle error
+			const errorCode = e.code
+			const errorMessage = e.message
+			// the email of the user's account used
+			const email = e.email
+			// the AuthCredential type that are used
+			const credential = FacebookAuthProvider.credentialFromError(e)
+		}
+	}
+
 	const singup = () => {}
 
 	useEffect(() => {
@@ -101,7 +136,8 @@ const useProviderAuth = () => {
 	return {
 		user,
 		signin,
-		signWithGoogle
+		signWithGoogle,
+		signWithFacebook
 	}
 }
 
