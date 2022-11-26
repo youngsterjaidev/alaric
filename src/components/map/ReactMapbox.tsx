@@ -9,8 +9,21 @@ import { ref, onValue, get } from "firebase/database";
 import { Location } from "../../types/firebase";
 import { Dropdown, Input, Button } from "../elements";
 import { useFindStops } from "../../custom-hooks";
-import { Sidebar } from "./Sidebar/Sidebar"
+import { Sidebar } from "./Sidebar/Sidebar";
 import axios from "axios";
+
+// helper functions
+const getRandomColor = () => {
+  try {
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    return `#${randomColor}`;
+  } catch (e) {
+    console.log(
+      "Error Occured while finding a random color getRandomColor fn : ",
+      e
+    );
+  }
+};
 
 interface MarkerOptions {
   isStop?: boolean | undefined;
@@ -38,7 +51,7 @@ const Container = styled.div<{ containerHeight: string }>`
   box-shadow: 0px 0px 20px 3px #00000069;
 
   @media (max-width: 550px) {
-    top: ${props => props.containerHeight};
+    top: ${(props) => props.containerHeight};
     width: 98%;
     margin: auto;
     border-radius: 1rem 1rem 0 0;
@@ -71,56 +84,8 @@ const SidebarForm = styled.form`
   gap: 0.5rem;
 `;
 
-// store of the 
+// store of the
 const store: any = {};
-
-interface BusListProp {
-  list: any
-}
-
-const BusList: React.FC<BusListProp> = ({ list }) => {
-
-  const [buses, setBuses] = useState([])
-
-  useEffect(() => {
-    if (list) {
-      setBuses(list.buses)
-    }
-    // NOTE: adding "list" var because the useEffect function does not 
-    // update when props change
-  }, [list])
-  console.log(list)
-
-  return (
-    <div>
-      <div>Result</div>
-      {
-        buses.map((bus, i) => (
-          <div key={i}>
-            <div>{bus}</div>
-          </div>
-        ))
-      }
-    </div >
-  )
-};
-
-const BusInfo = (props) => {
-
-  console.log(props)
-
-  return (
-    <div>
-      <h1>HP01A1345</h1>
-      <ul>
-        <li>
-          <a>Random</a>
-        </li>
-      </ul>
-    </div>
-  );
-};
-
 /**
  * The Map component
  */
@@ -137,91 +102,100 @@ export default function ReactMapbox() {
    * Ge the user location
    */
 
-  const getUserLocation = () => { }
+  const getUserLocation = () => { };
 
   /**
    * set the coords data for sending through map Matching API
    */
   const setCoordsData = (coords) => {
-    console.log("coords :", coords)
-    let coordsJSONData = Object.values(coords).map((geopoint) => [geopoint.coordinates.longitude, geopoint.coordinates.latitude])
+    console.log("coords :", coords);
+    let coordsJSONData = coords.map((geopoint) => {
+      if (geopoint.coordinates) {
+        return [geopoint.coordinates[1], geopoint.coordinates[0]];
+      }
+    });
+    console.log("JSON Data : ", coordsJSONData);
+    // return {
+    //   coordsJSONData: coordsJSONData.slice(0, 3),
+    //   coordsJSONString: coordsJSONData.slice(0, 3).join(";"),
+    // };
     return {
-      coordsJSONData,
-      coordsJSONString: coordsJSONData.join(";")
-    }
-  }
+      coordsJSONData: coordsJSONData,
+      coordsJSONString: coordsJSONData.join(";"),
+    };
+  };
 
   /**
    * Updating the route
    */
   const updateRoute = (coordinates) => {
-    console.log("update Route : ", coordinates)
+    console.log("update Route : ", coordinates);
     try {
-
       if (!coordinates) {
-        console.log("Coordinates is missing !")
-        return
+        console.log("Coordinates is missing !");
+        return;
       }
 
       // Set the profile
-      const profile = 'driving'
+      const profile = "driving";
       // Get the coordinates that were drawn on the map
       // const data = draw.getAll()
 
-      let { coordsJSONData, coordsJSONString } = setCoordsData(coordinates)
+      let { coordsJSONData, coordsJSONString } = setCoordsData(coordinates);
 
       // if the route is already rendered on the map
-      console.log(map.current.getSource('route'))
-      if (map.current.getLayer('route')) {
-        flyToCoords(coordsJSONData[0][0], coordsJSONData[0][1])
+      console.log(map.current.getSource("route"));
+      if (map.current.getLayer("route")) {
+        flyToCoords(coordsJSONData[0][0], coordsJSONData[0][1]);
 
-        console.log("Route is already on the map ! ")
+        console.log("Route is already on the map ! ");
 
-        return
+        return;
       }
+      flyToCoords(coordsJSONData[0][0], coordsJSONData[0][1]);
 
-
-      flyToCoords(coordsJSONData[0][0], coordsJSONData[0][1])
-
-      getMatch(coordsJSONString, null, profile)
+      getMatch(coordsJSONString, null, profile);
     } catch (e) {
-      console.log("Error Occured while updating the route updateRoute fn : ", e)
+      console.log(
+        "Error Occured while updating the route updateRoute fn : ",
+        e
+      );
     }
-  }
+  };
 
   // Draw the Map Matching route as a new layer on the map
   const addRoute = (coords) => {
     // If a route is already loaded, remove it
-    if (map.current.getSource('route')) {
-      map.current.removeLayer('route')
-      map.current.removeSource('route')
+    if (map.current.getSource(`${coords.uuid}`)) {
+      map.current.removeLayer(`${coords.uuid}`);
+      map.current.removeSource(`${coords.uuid}`);
     } else {
       // Add a new layer to the map
       map.current.addLayer({
-        id: 'route',
-        type: 'line',
+        id: `${coords.uuid}`,
+        type: "line",
         source: {
-          type: 'geojson',
+          type: "geojson",
           data: {
-            type: 'Feature',
+            type: "Feature",
             properties: {},
-            geometry: coords
-          }
+            geometry: coords.coords,
+          },
         },
         layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
+          "line-join": "round",
+          "line-cap": "round",
         },
         paint: {
-          'line-color': '#000',
-          'line-width': 10,
-          'line-opacity': 0.8
-        }
-      })
+          "line-color": getRandomColor(),
+          "line-width": 10,
+          "line-opacity": 1,
+        },
+      });
 
-      console.log(map.current.getLayer('route'))
+      console.log(map.current.getLayer("route"));
     }
-  }
+  };
 
   // Make a Map Matching request
   const getMatch = async (
@@ -230,30 +204,52 @@ export default function ReactMapbox() {
     profile: string
   ) => {
     try {
-      console.log(coordinates, radius, profile)
-      // Seperate the radiuses with semicolons
-      // const radiuses = radius.join(';')
-      // Create the query
-      const response = await axios.get(`https://api.mapbox.com/matching/v5/mapbox/${profile}/${coordinates}?geometries=geojson&access_token=${mapboxgl.accessToken}`)
+      console.log("get Match log : ", coordinates, radius, profile);
 
-      console.log("The Query : ", response)
-
-      if (!response) return
-
-      // Handle errors
-      if (response.data.code !== "Ok") {
-        console.log("Some error occured while getting the response from map matching !")
+      if (!coordinates) {
+        console.log("Arguments are missing for sending the API ")
+        let str = "https://api.mapbox.com/directions/v5/mapbox/driving/77.213348%2C31.108277%3B77.206469%2C31.093002%3B77.192713%2C31.094947%3B77.194463%2C31.088807%3B77.188553%2C31.086122%3B77.192064%2C31.069607%3B77.180249%2C31.071137%3B77.182119%2C31.073344%3B77.180909%2C31.081574%3B77.172913%2C31.082995%3B77.170233%2C31.089942%3B77.159149%2C31.099553%3B77.151053%2C31.098313?alternatives=true&geometries=geojson&overview=full&steps=false&access_token=YOUR_MAPBOX_ACCESS_TOKEN"
         return
       }
 
+      // Seperate the radiuses with semicolons
+      // const radiuses = radius.join(';')
+      // Create the query
+      const response = await axios.get(
+        `https://api.mapbox.com/directions/v5/mapbox/${profile}/${coordinates}?geometries=geojson&access_token=${mapboxgl.accessToken}`
+      );
+
+      console.log("The Query : ", response);
+
+      if (!response) return;
+
+      // Handle errors
+      if (response.data.code !== "Ok") {
+        console.log(
+          "Some error occured while getting the response from map matching !"
+        );
+        return;
+      }
+
+      // check the number of split routes
+      let obj = [];
+
+      response.data.routes.forEach((item, index) => {
+        obj = [...obj, ...item.geometry.coordinates];
+      });
+
       // Get the coordinates from the response
-      const coords = response.data.matchings[0].geometry
-      console.log("The Coords from the response : ", coords)
-      addRoute(coords)
+      const coords = { type: "LineString", coordinates: obj };
+      console.log(coords);
+
+      addRoute({ coords, uuid: response.data.uuid });
     } catch (error) {
-      console.log("Error Occured while sending the match request getMatch fn : ", error);
+      console.log(
+        "Error Occured while sending the match request getMatch fn : ",
+        error
+      );
     }
-  }
+  };
 
   /*
    * Fly to the particular coordinates in the map
@@ -361,9 +357,9 @@ export default function ReactMapbox() {
         let li = document.createElement("li");
         li.innerHTML = `<div href="" onclick="function navigateBus() { console.log('clicked') }" style="text-decoration: none;color: black;">${buses[i]}</div>`;
         li.onclick = () => {
-          console.log("Locate the bus")
-          navigate(`/live/${buses[i]}`, { replace: true })
-        }
+          console.log("Locate the bus");
+          navigate(`/live/${buses[i]}`, { replace: true });
+        };
         console.log("Li ", li, li.onclick);
         ul.appendChild(li);
       }
@@ -442,9 +438,9 @@ export default function ReactMapbox() {
     map.current.on("load", () => {
       _fetchMarkerData();
 
-      getMatch()
+      getMatch();
 
-      getUserLocation()
+      getUserLocation();
 
       //map.current.addControl(draw)
     });
@@ -469,9 +465,8 @@ export default function ReactMapbox() {
       <Sidebar
         updateRoute={updateRoute}
         findStop={(stop) => {
-
           // check if the stop is present or not
-          if (!stop) return
+          if (!stop) return;
 
           _addMarkerToMap(
             {

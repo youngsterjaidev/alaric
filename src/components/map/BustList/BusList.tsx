@@ -37,10 +37,16 @@ export const BusList: React.FC<BusListProp> = ({ list }) => {
     // update when props change
   }, [list]);
 
+  if (!list) {
+    return (
+      <div>Buses not found !</div>
+    )
+  }
+
   return (
     <Container>
       <Heading>Buses near by you</Heading>
-      {buses.map((bus, i) => (
+      {list.buses.map((bus, i) => (
         <CardContainer key={i}>
           <Card>{bus}</Card>
         </CardContainer>

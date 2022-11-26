@@ -26,10 +26,10 @@ interface Props {
 
 export const BusInfo: FC<Props> = ({ updateRoute }) => {
   const param = useParams();
-  const [result, setResult] = useState<any>([])
-  const [r, setR] = useState()
+  const [busDocs, setBusDocs] = useState<any>([])
+  const [routeDocs, setRouteDocs] = useState()
   // const [, [setColName, setDocName], [status, data, error]] = useFindStop_("buses", param.bus)
-  // const [, [setRouteColName, setRouteDocName, setRouteCondName], [routeStatus, routeData, routeError]] = useFindStop_()
+  // const [, [setRouteColName, setrouteDocsName, setRouteCondName], [routeStatus, routeData, routeError]] = useFindStop_()
 
   const setCoordsData = (coords) => {
     return Object.values(coords).map((geopoint) => [geopoint.coordinates.longitude, geopoint.coordinates.latitude]).join(";")
@@ -39,7 +39,7 @@ export const BusInfo: FC<Props> = ({ updateRoute }) => {
     try {
       console.log("Fetch Data: ", param.bus)
 
-      firestore.findDocById(param.bus, "buses", setResult)
+      firestore.findDocById(param.bus, "buses", setBusDocs)
 
       // setDocName(param.bus)
 
@@ -49,10 +49,10 @@ export const BusInfo: FC<Props> = ({ updateRoute }) => {
       //   console.log("The routes data")
       //   setRouteColName("routes")
       //   if (data.allotedroute.id) {
-      //     setRouteDocName(data.allotedroute.id)
+      //     setrouteDocsName(data.allotedroute.id)
       //     return
       //   }
-      //   setRouteDocName(data.allotedroute)
+      //   setrouteDocsName(data.allotedroute)
       // }
 
 
@@ -72,14 +72,14 @@ export const BusInfo: FC<Props> = ({ updateRoute }) => {
 
     console.log("Re-render busInfo ----", param.bus)
 
-    if (!result) {
+    if (!busDocs) {
       console.log("Result is missing")
       return
     }
 
-    if (result.length !== 0) {
-      console.log("The result : ", result)
-      firestore.findDocById(result.allotedroute.id, "routes", setR)
+    if (busDocs.length !== 0) {
+      console.log("The result : ", busDocs)
+      firestore.findDocById(busDocs.allotedroute.id, "routes", setRouteDocs)
     }
 
     // fetchData()
@@ -89,21 +89,19 @@ export const BusInfo: FC<Props> = ({ updateRoute }) => {
     //   updateRoute(routeData.stops_)
     // }
 
-  }, [result])
+  }, [busDocs])
 
   useEffect(() => {
-    if (r) {
+    if (routeDocs) {
       console.log("Hit the r ")
-      updateRoute(r.stops_)
+      updateRoute(routeDocs.stops)
     }
-  }, [r])
+  }, [routeDocs])
 
-  if (result) {
+  if (!busDocs || !routeDocs) {
     return (
       <>
         <div>Result</div>
-        <div>{result.id}</div>
-        {r ? r.id : null}
       </>
     )
   }
@@ -113,22 +111,23 @@ export const BusInfo: FC<Props> = ({ updateRoute }) => {
   if (!param.bus) return <div>No such record found !</div>;
 
   return (
-    <div>
-      Nothing
-    </div>
-    // <Container>
-    //   <div>{param.bus}</div>
-    //   <section>
-    //     <Heading>{data.busId}</Heading>
-    //     <div>{data.allotedroute.id}</div>
-    //     <div>{data.busName}</div>
-    //   </section>
-    //   <section>
-    //     <Heading>Route {routeData.routeName}</Heading>
-    //     <ul>
-    //       {Object.values(routeData.stops_ || {}).map(stop => <li>{stop.stopName}</li>)}
-    //     </ul>
-    //   </section>
-    // </Container>
+    <>
+      <Container>
+        <div>{param.bus}</div>
+        <section>
+          <Heading>{busDocs.busId}</Heading>
+          <div>{busDocs.allotedroute.id}</div>
+          <div>{busDocs.busName}</div>
+        </section>
+        <section>
+          <Heading>Route {routeDocs.routeName}</Heading>
+          <ul>
+            {routeDocs.stops.map((stop, index) => {
+              return <li key={index}>{stop.stopName}</li>
+            })}
+          </ul>
+        </section>
+      </Container>
+    </>
   );
 };
