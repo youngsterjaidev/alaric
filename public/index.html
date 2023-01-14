@@ -16,6 +16,14 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shizuru&display=swap" rel="stylesheet">
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -29,7 +37,7 @@
     <style>
         body {
             margin: 0;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
         }
 
         * {
@@ -51,11 +59,22 @@
             z-index: 8;
         }
 
+        /** */
+
         .custom-marker {
             background-image: url("/bus.png");
             background-size: cover;
             width: 35px;
             height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .bus-marker {
+            background-image: url("https://img.icons8.com/plasticine/100/000000/bus--v1.png");
+            background-size: cover;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
         }
@@ -80,7 +99,7 @@
         <h1>Welcome back</h1>
     </div>-->
     <div id="modal"></div>
-    <div id="root"></div>
+    <div id="app"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -92,10 +111,15 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
 </body>
-    <script type="text/javascript">
+<script type="text/javascript">
     window.addEventListener("load", async () => {
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js")
+        try {
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("service-worker.js")
+            }
+        }
+        catch (e) {
+            console.log("Error Occured while registering the service Worker : ", e)
         }
     })
 </script>

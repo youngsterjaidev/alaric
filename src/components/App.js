@@ -7,16 +7,16 @@ import firebase from "firebase/app";
 
 //mapbox.workerClass = MapboxWorker
 mapboxgl.accessToken =
-    "pk.eyJ1IjoiamFpZGV2djk5OSIsImEiOiJja25vcHhkNjExYmR4MnZwcmU3MG9wd2hlIn0.YV5iqi1TiI1nSWQd-bQBmA";
+  "pk.eyJ1IjoiamFpZGV2djk5OSIsImEiOiJja25vcHhkNjExYmR4MnZwcmU3MG9wd2hlIn0.YV5iqi1TiI1nSWQd-bQBmA";
 
 const tMapStyle = {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    lelft: 0,
-    bottom: 0,
-    width: "100%",
-    height: "100vh",
+  position: "absolute",
+  top: 0,
+  right: 0,
+  lelft: 0,
+  bottom: 0,
+  width: "100%",
+  height: "100vh",
 };
 
 let map;
@@ -27,52 +27,49 @@ let marker1 = new mapboxgl.Marker();
 let marker2 = new mapboxgl.Marker();
 
 const App = () => {
-    const mapContainer = useRef();
-    const [lng, setLng] = useState(0);
-    const [lat, setLat] = useState(0);
-    const [zoom, setZoom] = useState(2);
-    const [presentLocation, setPresentLocation] = useState({
-        longitude: 0,
-        latitude: 0,
-    });
-    const [markers, setMarkers] = useState([]);
+  const mapContainer = useRef();
+  const [lng, setLng] = useState(0);
+  const [lat, setLat] = useState(0);
+  const [zoom, setZoom] = useState(2);
+  const [presentLocation, setPresentLocation] = useState({
+    longitude: 0,
+    latitude: 0,
+  });
+  const [markers, setMarkers] = useState([]);
 
-    // send location to the server
-    const sendUserLocation = () => {
-        setInterval(() => {
-            console.log("sending");
-            navigator.geolocation.getCurrentPosition((e) => {
-                console.log("------", e.coords);
-                firebase
-                    .database()
-                    .ref()
-                    .child("web")
-                    .child("location")
-                    .set(
-                        {
-                            currentLocation: {
-                                latitude: e.coords.latitude,
-                                longitude: e.coords.longitude,
-                                time: Math.random(),
-                            },
-                        },
-                        (err) => {
-                            if (err) {
-                                console.log(
-                                    "Error occured while sending the location",
-                                    err
-                                );
-                            } else {
-                                console.log("Location is send");
-                            }
-                        }
-                    );
-            });
-        }, 10000);
-    };
+  // send location to the server
+  const sendUserLocation = () => {
+    setInterval(() => {
+      console.log("sending");
+      navigator.geolocation.getCurrentPosition((e) => {
+        console.log("------", e.coords);
+        firebase
+          .database()
+          .ref()
+          .child("web")
+          .child("location")
+          .set(
+            {
+              currentLocation: {
+                latitude: e.coords.latitude,
+                longitude: e.coords.longitude,
+                time: Math.random(),
+              },
+            },
+            (err) => {
+              if (err) {
+                console.log("Error occured while sending the location", err);
+              } else {
+                console.log("Location is send");
+              }
+            }
+          );
+      });
+    }, 10000);
+  };
 
-    // initialze the map before render and react create element that contain map
-    /*useEffect(() => {
+  // initialze the map before render and react create element that contain map
+  /*useEffect(() => {
         const map = new mapboxgl.Map({
             container: mapContainer.current, // reference where the map will be shows
             style: "mapbox://styles/mapbox/streets-v11",
@@ -130,7 +127,7 @@ const App = () => {
                         console.log("Hurry ! Location send")
                     }
                 })*/
-    /*map.flyTo({
+  /*map.flyTo({
                     center: [e.coords.longitude, e.coords.latitude],
                     zoom: 15,
                 });
@@ -150,31 +147,31 @@ const App = () => {
         return () => map.remove();
     }, []);*/
 
-    const callWebWorker = () => {
-        //worker.postMessage({ state: true })
-    };
+  const callWebWorker = () => {
+    //worker.postMessage({ state: true })
+  };
 
-    const initialzeMap = async () => {
-        try {
-            var map = await new mapboxgl.Map({
-                container: mapContainer.current, // reference where the map will be shows
-                style: "mapbox://styles/mapbox/streets-v11",
-                center: [lng, lat],
-                zoom: zoom,
-            });
-            var geolocate = await new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true,
-                },
-                trackingUserLocation: true,
-                trackUserLocation: true,
-                showAccuracyCircle: false,
-                showUserLocation: true,
-            });
+  const initialzeMap = async () => {
+    try {
+      var map = await new mapboxgl.Map({
+        container: mapContainer.current, // reference where the map will be shows
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [lng, lat],
+        zoom: zoom,
+      });
+      var geolocate = await new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackingUserLocation: true,
+        trackUserLocation: true,
+        showAccuracyCircle: false,
+        showUserLocation: true,
+      });
 
-            //var marker = new mapboxgl.Marker();
+      //var marker = new mapboxgl.Marker();
 
-            /*await firebase
+      /*await firebase
                 .database()
                 .ref()
                 .child("web")
@@ -191,31 +188,27 @@ const App = () => {
                     marker.addTo(map);
                 });*/
 
-            //marker.addTo(map);
+      //marker.addTo(map);
 
-            await firebase
-                .database()
-                .ref("location")
-                .on("value", (snapshot) => {
-                    if (snapshot.val() !== null) {
-                        const result = Object.keys(snapshot.val()).map(
-                            (key) => {
-                                new mapboxgl.Marker()
-                                    .setLngLat([
-                                        snapshot.val()[key].currentLocation
-                                            .longitude,
-                                        snapshot.val()[key].currentLocation
-                                            .latitude,
-                                    ])
-                                    .addTo(map);
-                            }
-                        );
-                    } else {
-                        console.log("The Snapshot is null");
-                    }
-                });
+      await firebase
+        .database()
+        .ref("location")
+        .on("value", (snapshot) => {
+          if (snapshot.val() !== null) {
+            const result = Object.keys(snapshot.val()).map((key) => {
+              new mapboxgl.Marker()
+                .setLngLat([
+                  snapshot.val()[key].currentLocation.longitude,
+                  snapshot.val()[key].currentLocation.latitude,
+                ])
+                .addTo(map);
+            });
+          } else {
+            console.log("The Snapshot is null");
+          }
+        });
 
-            /*function animateMarker(timestamp) {
+      /*function animateMarker(timestamp) {
             
             firebase
             .database()
@@ -241,115 +234,118 @@ const App = () => {
                 requestAnimationFrame(animateMarker)
             }*/
 
-            map.on("load", () => {
-                // no need the press the  uselocation button
-                console.log("Map is loading");
-                geolocate.trigger();
-            });
+      map.on("load", () => {
+        // no need the press the  uselocation button
+        console.log("Map is loading");
+        geolocate.trigger();
+      });
 
-            geolocate.on("geolocate", (e) => {
-                console.log("On geo Locate", e);
-                //setLng(e.coords.longitude);
-                //setLat(e.coords.latitude);
-                //map.flyTo({ center: [e.coords.longitude, e.coords.latitude], zoom: 9})
-                map.flyTo({
-                    center: [e.coords.longitude, e.coords.latitude],
-                    zoom: 15,
-                });
-            });
-
-            map.addControl(geolocate);
-
-            map.on("move", () => {
-                setLng(map.getCenter().lng.toFixed(4));
-                setLat(map.getCenter().lat.toFixed(4));
-                setZoom(map.getZoom().toFixed(2));
-            });
-
-            //requestAnimationFrame(animateMarker)
-        } catch (e) {
-            console.log("Error Occured", e);
-        }
-    };
-
-    useEffect(() => {
-        console.log("Effect start");
-
-        map = new mapboxgl.Map({
-            container: mapContainer.current, // reference where the map will be shows
-            style: "mapbox://styles/mapbox/streets-v11",
-            center: [lng, lat],
-            zoom: zoom,
+      geolocate.on("geolocate", (e) => {
+        console.log("On geo Locate", e);
+        //setLng(e.coords.longitude);
+        //setLat(e.coords.latitude);
+        //map.flyTo({ center: [e.coords.longitude, e.coords.latitude], zoom: 9})
+        map.flyTo({
+          center: [e.coords.longitude, e.coords.latitude],
+          zoom: 15,
         });
+      });
 
-        geolocate = new mapboxgl.GeolocateControl({
-            positionOptions: {
-                enableHighAccuracy: true,
-            },
-            trackingUserLocation: true,
-            trackUserLocation: true,
-            showAccuracyCircle: false,
-            showUserLocation: true,
-        });
+      map.addControl(geolocate);
 
-        console.log("Effect End");
+      map.on("move", () => {
+        setLng(map.getCenter().lng.toFixed(4));
+        setLat(map.getCenter().lat.toFixed(4));
+        setZoom(map.getZoom().toFixed(2));
+      });
 
-        return () => map.remove();
-    }, []);
+      //requestAnimationFrame(animateMarker)
+    } catch (e) {
+      console.log("Error Occured", e);
+    }
+  };
 
-    useEffect(() => {
-        console.log("Effect two");
+  useEffect(() => {
+    console.log("Effect start");
 
-        locationMarker = new mapboxgl.Marker({
-            color: "red",
-        });
+    map = new mapboxgl.Map({
+      container: mapContainer.current, // reference where the map will be shows
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [lng, lat],
+      zoom: zoom,
+    });
 
-        navigator.geolocation.getCurrentPosition((e) => {
-            setPresentLocation({
-                latitude: e.coords.latitude,
-                longitude: e.coords.longitude,
-            });
-        });
+    geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackingUserLocation: true,
+      trackUserLocation: true,
+      showAccuracyCircle: false,
+      showUserLocation: true,
+    });
 
-        firebase
-            .database()
-            .ref("location")
-            .on("value", async (snapshot) => {
-                if (snapshot.val() !== null) {
-                    const result = await Object.keys(snapshot.val()).map(
-                        (key) => snapshot.val()[key]
-                    );
+    console.log("Effect End");
 
-                    setMarkers(result);
+    return () => map.remove();
+  }, []);
 
-                    marker1.setLngLat([
-                        result[0].currentLocation.longitude,
-                        result[0].currentLocation.latitude
-                    ]).addTo(map)
+  useEffect(() => {
+    console.log("Effect two");
 
-                    marker2.setLngLat([
-                        result[1].currentLocation.longitude,
-                        result[1].currentLocation.latitude
-                    ]).addTo(map)
-                } else {
-                    console.log("The Snapshot is null");
-                }
-            });
+    locationMarker = new mapboxgl.Marker({
+      color: "red",
+    });
 
-    }, []);
+    navigator.geolocation.getCurrentPosition((e) => {
+      setPresentLocation({
+        latitude: e.coords.latitude,
+        longitude: e.coords.longitude,
+      });
+    });
 
-    useEffect(() => {
-        console.log("Effect Three");
-        locationMarker
-            .setLngLat([presentLocation.longitude, presentLocation.latitude])
+    firebase
+      .database()
+      .ref("location")
+      .on("value", async (snapshot) => {
+        if (snapshot.val() !== null) {
+          const result = await Object.keys(snapshot.val()).map(
+            (key) => snapshot.val()[key]
+          );
+
+          setMarkers(result);
+
+          marker1
+            .setLngLat([
+              result[0].currentLocation.longitude,
+              result[0].currentLocation.latitude,
+            ])
             .addTo(map);
-    }, [presentLocation]);
 
-    return (
-        <div>
-            <div style={tMapStyle} ref={mapContainer}></div>
-        </div>
-    );
+          marker2
+            .setLngLat([
+              result[1].currentLocation.longitude,
+              result[1].currentLocation.latitude,
+            ])
+            .addTo(map);
+        } else {
+          console.log("The Snapshot is null");
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log("Effect Three");
+    locationMarker
+      .setLngLat([presentLocation.longitude, presentLocation.latitude])
+      .addTo(map);
+  }, [presentLocation]);
+
+  return (
+    <div>
+      <div style={tMapStyle} ref={mapContainer}></div>
+    </div>
+  );
 };
 
 export default App;

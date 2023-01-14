@@ -1,9 +1,12 @@
-import React, { createContext } from 'react'
+import React, { createContext } from "react";
 
-const UserContext = createContext([
+const UserContext = createContext(
+  [
     {
-        uid: "anything"
-    }
-], () => {})
+      uid: "anything",
+    },
+  ],
+  () => {}
+);
 
-export default UserContext
+export default UserContext;
