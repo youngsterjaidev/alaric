@@ -76,7 +76,7 @@ void loop() {
  
   
   Serial1.println("AT+HTTPPARA=\"CID\",1");	/* Set parameters for HTTP session */
-  delay(200);
+  delay(50);
   object.set("id","HP01A1144");
   object.set("latitude",latitude);
   object.set("longitude",longitude);
@@ -85,29 +85,29 @@ void loop() {
   Serial.println(" ");  
   
   object.prettyPrintTo(sendtoserver);
-  delay(200);
+  delay(100);
  
-  Serial1.println("AT+HTTPPARA=\"URL\",\"alaricserver.herokuapp.com/api/buses/postBusLocation\"");	/* Set parameters for HTTP session */
+  Serial1.println("AT+HTTPPARA=\"URL\",\"alaric.gq/iot/bus/postBusLocation\"");	/* Set parameters for HTTP session */
   delay(100);
   ShowSerialData();
 
   Serial1.println("AT+HTTPPARA=\"CONTENT\",\"application/json\"");
-  delay(100);
+  delay(50);
   ShowSerialData();
  
  
   Serial1.println("AT+HTTPDATA=" + String(sendtoserver.length()) + ",100000");
   
-  delay(100);
+  delay(50);
   ShowSerialData();
  
   Serial1.println(sendtoserver);
-  delay(100);
+  delay(200);
   ShowSerialData();
 
   
   Serial1.println("AT+HTTPACTION=1");	/* Start POST session */
-  delay(200);
+  delay(100);
   ShowSerialData();
 
  
