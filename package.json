@@ -36,6 +36,7 @@
     "start": "react-scripts start",
     "build": "CI=false react-scripts build",
     "test": "cypress run",
+    "cypress:open": "cypress open",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
