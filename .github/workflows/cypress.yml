@@ -14,5 +14,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           install-command: npm ci --legacy-peer-deps
+          config-file: cypress.config.ts
+          browser: chrome
           build: npm run build
           start: npm start
