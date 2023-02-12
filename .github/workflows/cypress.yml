@@ -13,6 +13,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          install-command: npm install --force
+          install-command: npm ci --legacy-peer-deps && CI=false
           build: npm run build
           start: npm start
