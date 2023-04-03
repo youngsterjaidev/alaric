@@ -2,7 +2,7 @@
 
 describe("Create An Account", () => {
   beforeEach(() => {
-    cy.visit("/createAccount");
+    cy.visit("/login");
   });
 
   it("creating a user ", () => {
