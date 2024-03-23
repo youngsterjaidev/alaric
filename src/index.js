@@ -21,6 +21,7 @@ import {
   CreateAccount,
   PasswordReset,
   Home,
+  About
 } from "./pages";
 import styled from "styled-components";
 
@@ -100,6 +101,7 @@ const App = (props) => {
       <CreateAccount path="/createAccount" />
       <Profile path="/profile" />
       <PasswordReset path="/passwordReset" />
+      <About path="/about" />
     </Router>
   );
 };

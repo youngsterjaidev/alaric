@@ -48,7 +48,7 @@ const Loading = () => {
       {user ? (
         <Redirect to="/home" noThrow />
       ) : (
-        <Redirect to="/login" noThrow />
+        <Redirect to="/about" noThrow />
       )}
     </Container>
   );

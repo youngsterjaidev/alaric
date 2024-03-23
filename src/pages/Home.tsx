@@ -14,8 +14,7 @@ import {
 const Container = styled.div`
   width: 100%;
   background: ${(props) => props.theme.__background};
-  margin-top: 2em;
-  min-height: 90vh;
+  min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 2em 1em;
@@ -195,13 +194,6 @@ const Home = (props) => {
               return <div>{item.stopName}</div>;
             })}
       </div>
-      <Container style={{ marginTop: 0 }}>
-        <Marquee direction="right">Alaric</Marquee>
-        <Marquee truespeed="120">Alaric</Marquee>
-        <Marquee direction="right" scrollamount="10">
-          Alaric
-        </Marquee>
-      </Container>
     </>
   );
 };

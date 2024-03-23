@@ -102,7 +102,7 @@ export default function ReactMapbox() {
    * Ge the user location
    */
 
-  const getUserLocation = () => { };
+  const getUserLocation = () => {};
 
   /**
    * set the coords data for sending through map Matching API
@@ -207,9 +207,10 @@ export default function ReactMapbox() {
       console.log("get Match log : ", coordinates, radius, profile);
 
       if (!coordinates) {
-        console.log("Arguments are missing for sending the API ")
-        let str = "https://api.mapbox.com/directions/v5/mapbox/driving/77.213348%2C31.108277%3B77.206469%2C31.093002%3B77.192713%2C31.094947%3B77.194463%2C31.088807%3B77.188553%2C31.086122%3B77.192064%2C31.069607%3B77.180249%2C31.071137%3B77.182119%2C31.073344%3B77.180909%2C31.081574%3B77.172913%2C31.082995%3B77.170233%2C31.089942%3B77.159149%2C31.099553%3B77.151053%2C31.098313?alternatives=true&geometries=geojson&overview=full&steps=false&access_token=YOUR_MAPBOX_ACCESS_TOKEN"
-        return
+        console.log("Arguments are missing for sending the API ");
+        let str =
+          "https://api.mapbox.com/directions/v5/mapbox/driving/77.213348%2C31.108277%3B77.206469%2C31.093002%3B77.192713%2C31.094947%3B77.194463%2C31.088807%3B77.188553%2C31.086122%3B77.192064%2C31.069607%3B77.180249%2C31.071137%3B77.182119%2C31.073344%3B77.180909%2C31.081574%3B77.172913%2C31.082995%3B77.170233%2C31.089942%3B77.159149%2C31.099553%3B77.151053%2C31.098313?alternatives=true&geometries=geojson&overview=full&steps=false&access_token=YOUR_MAPBOX_ACCESS_TOKEN";
+        return;
       }
 
       // Seperate the radiuses with semicolons

@@ -3,24 +3,24 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Button, Input, Sidebar } from "../components";
 import { ThemeToggle } from "../assets";
-import { Link, navigate } from "@reach/router";
+import { Link, navigate, useLocation, useParams } from "@reach/router";
 import { useAuth, useTheme } from "../custom-hooks";
 import { IoIosArrowBack, IoIosMenu } from "react-icons/io";
 import Modal from "../Modal";
 
-const Nav = styled.nav`
+const Nav = styled.nav<{ shadow?: boolean }>`
   padding: 0.5em 1em;
   display: flex;
   flex-flow: row nowrap;
+  width: 100%;
   align-items: center;
   background-color: ${(props) => props.theme.__background};
   transition: background-color 0.4s linear;
   justify-content: space-between;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-	box-shadow: 5px 0 20px rgb(0 0 0 / 45%);
+  box-shadow: ${(props) =>
+    props.shadow ? "5px 0 20px rgb(0 0 0 / 45%)" : "none"};
 
   @media (max-width: 600px) {
     display: none;
@@ -33,13 +33,20 @@ const Form = styled.form`
   flex-flow: row nowrap;
 `;
 
-const MyLink = styled(Link)`
+const MyLink = styled(Link)<{ active?: boolean }>`
   text-decoration: none;
   margin-right: 1em;
   padding: 0.15em 1em;
   font-weight: 600;
   border-radius: 4em;
   color: ${(props) => props.theme.__textColor};
+  ${(props) => {
+    if (props.active) {
+      return `background: ${props.theme.__textColor};
+      color: ${props.theme.__background};`;
+    }
+    return props.theme.__background;
+  }};
 
   &:hover {
     background: ${(props) => props.theme.__textColor};
@@ -62,10 +69,9 @@ const MobileNav = styled.div`
     align-items: center;
     background-color: ${(props) => props.theme.__background};
     justify-content: space-between;
-    position: fixed;
+    position: sticky;
+    width: 100%;
     top: 0;
-    left: 0;
-    right: 0;
   }
 `;
 
@@ -80,13 +86,15 @@ const Icon = styled.div`
   }
 `;
 
-export const Navbar = () => {
+export const Navbar = (props) => {
+  const location = useLocation();
+  const params = useParams();
   // @ts-ignore
-	const { user } = useAuth()
+  const { user } = useAuth();
   const [theme, setTheme] = useTheme();
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
-	console.log("Navbar User : ", user)
+  console.log("Navbar User : ", user, location);
 
   // toggle sidebar
   const toggleSidebar = () => {
@@ -99,14 +107,45 @@ export const Navbar = () => {
 
   return (
     <>
-      <Nav>
+      <Nav shadow={props.shadow || false}>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <MyLink data-test="web-nav-link-home" to="/home">Home</MyLink>
-          <MyLink data-test="web-nav-link-live" to="/live">Live</MyLink>
-          <MyLink data-test="web-nav-link-contact" to="/contact">Contact</MyLink>
-          <MyLink data-test="web-nav-link-help" to="/help">Help</MyLink>
+          <MyLink
+            active={location.pathname === "/home"}
+            data-test="web-nav-link-home"
+            to="/home"
+          >
+            Home
+          </MyLink>
+          <MyLink
+            active={location.pathname === "/live"}
+            data-test="web-nav-link-live"
+            to="/live"
+          >
+            Live
+          </MyLink>
+          <MyLink
+            active={location.pathname === "/contact"}
+            data-test="web-nav-link-contact"
+            to="/contact"
+          >
+            Contact
+          </MyLink>
+          <MyLink
+            active={location.pathname === "/help"}
+            data-test="web-nav-link-help"
+            to="/help"
+          >
+            Help
+          </MyLink>
+          <MyLink
+            active={location.pathname === "/about"}
+            data-test="web-nav-link-about"
+            to="/about"
+          >
+            About
+          </MyLink>
           <ThemeToggle
-						dataTest="web-nav-link-themetoggle"
+            dataTest="web-nav-link-themetoggle"
             onClick={() => {
               console.log("Ready !");
               setTheme(theme === "dark" ? "light" : "dark");
@@ -130,10 +169,15 @@ export const Navbar = () => {
             <MyButton secondary type="submit" primary small>
               Search
             </MyButton>
-						<MyButton type="submit" primary small onClick={() => {
-							navigate(`${user ? "/profile" : "/login"}`)
-							}}>
-							{user ? "Account" : "Login"}
+            <MyButton
+              type="submit"
+              primary
+              small
+              onClick={() => {
+                navigate(`${user ? "/profile" : "/login"}`);
+              }}
+            >
+              {user ? "Account" : "Login"}
             </MyButton>
           </Form>
         </div>
@@ -141,26 +185,38 @@ export const Navbar = () => {
       <Sidebar showModal={showSidebar} setShowModal={setShowSidebar}>
         <Ul>
           <li>
-            <MyLink data-test="mobile-nav-link-home" to="/home">Home</MyLink>
+            <MyLink data-test="mobile-nav-link-home" to="/home">
+              Home
+            </MyLink>
           </li>
           <li>
-            <MyLink data-test="mobile-nav-link-live" to="/live">Live</MyLink>
+            <MyLink data-test="mobile-nav-link-live" to="/live">
+              Live
+            </MyLink>
           </li>
           <li>
-            <MyLink data-test="mobile-nav-link-contact" to="/contact">Contact</MyLink>
+            <MyLink data-test="mobile-nav-link-contact" to="/contact">
+              Contact
+            </MyLink>
           </li>
           <li>
-            <MyLink data-test="mobile-nav-link-help" to="/help">Help</MyLink>
+            <MyLink data-test="mobile-nav-link-help" to="/help">
+              Help
+            </MyLink>
           </li>
-					<li>
-						{!user ? (
-            	<MyLink data-test="mobile-nav-link-login" to="/login">Login</MyLink>
-						) : (
-            	<MyLink data-test="mobile-nav-link-login" to="/profile">Account</MyLink>
-						)}
+          <li>
+            {!user ? (
+              <MyLink data-test="mobile-nav-link-login" to="/login">
+                Login
+              </MyLink>
+            ) : (
+              <MyLink data-test="mobile-nav-link-login" to="/profile">
+                Account
+              </MyLink>
+            )}
           </li>
           <ThemeToggle
-						dataTest="mobile-nav-link-themetoggle"
+            dataTest="mobile-nav-link-themetoggle"
             onClick={() => {
               console.log("Ready !");
               setTheme(theme === "dark" ? "light" : "dark");
